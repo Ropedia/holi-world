@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Holi-World | Ropedia</title>
+<meta name="description" content="Holi-World: Building Holistic World Intelligence from Human-Ego Experience. Everyday egocentric video, turned into grounded 4D world data automatically.">
+<meta property="og:title" content="Holi-World: Building Holistic World Intelligence from Human-Ego Experience">
+<meta property="og:description" content="From egocentric recordings to grounded 4D world records, ~80K spatial-temporal QA pairs, and a 4B model that outperforms a zero-shot 27B model on spatial and temporal reasoning.">
+<meta property="og:image" content="assets/img/cover_2.35x1.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Design tokens mirror ropedia.com (:root of the production site). */
+:root {
+  --g: #ccffa0; --g2: #b8f080; --gd: #1e3010; --go: #0f2200;
+  --b0: #080808; --b1: #0d0d0d; --b2: #141414; --b3: #1c1c1c; --b4: #272727;
+  --w: #fff; --w1: #e8e8ee; --w1-soft: #e3e2e5; --w1-olive-soft: #c3c9b8;
+  --w2: #9a9ab0; --w2-warm: #a8a8a3; --w3: #4a4a5a; --muted: #949aa3;
+  --bl: #7ac4d8; --bl2: #4a9ab8;
+  --base-bar: #5a5a66; --base-bar2: #3c3c46;
+  --nav-bg: rgba(11, 13, 18, .86);
+  --grid-major: #ffffff0e;
+  --f-display: "Space Grotesk", "Inter Tight", system-ui, sans-serif;
+  --f-body: "Inter Tight", "Space Grotesk", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", "SF Mono", "Roboto Mono", monospace;
+  --gutter: clamp(16px, 4vw, 96px);
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--b0); color: var(--w2);
+  font-family: var(--f-body); font-size: 16px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+img, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--g); color: var(--go); }
+:focus-visible { outline: 2px solid var(--g); outline-offset: 3px; }
+.wrap { width: 100%; max-width: calc(1360px + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+
+/* ---------- Nav + scroll progress ---------- */
+.nav {
+  position: fixed; inset: 0 0 auto 0; z-index: 50; height: 64px;
+  background: var(--nav-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--grid-major);
+}
+.nav .wrap { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.progress { position: absolute; left: 0; bottom: -1px; height: 1px; width: 100%; background: var(--g); transform-origin: 0 50%; transform: scaleX(0); }
+.logo {
+  display: block; width: 104px; height: 25px; background: var(--g); flex: none;
+  -webkit-mask: url(assets/img/ropedia_logo.svg) no-repeat left center / contain;
+          mask: url(assets/img/ropedia_logo.svg) no-repeat left center / contain;
+}
+
+.partner-logo { display: block; width: auto; height: 36px; flex: none; }
+@media (max-width: 560px) { .partner-logo { height: 30px; } }
+
+/* ---------- Buttons (academic-btn) ---------- */
+.btn-row { display: flex; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 18px; padding: 13px 18px 13px 22px;
+  font-family: var(--f-display); font-weight: 700; font-size: 14.4px; letter-spacing: .01em;
+  background: #1e1e1e; color: var(--w); border: 0; cursor: pointer; transition: background .25s var(--ease);
+}
+.btn svg { width: 16px; height: 16px; flex: none; transition: transform .3s var(--ease); }
+.btn:hover svg { transform: translateX(3px); }
+.btn:hover { background: #2a2a2a; }
+.btn.primary { background: var(--g); color: var(--go); }
+.btn.primary:hover { background: var(--g2); }
+
+/* ---------- Hero ---------- */
+.hero { position: relative; min-height: 760px; padding: 150px 0 96px; background: #000; overflow: hidden; border-bottom: 1px solid var(--b3); }
+#hero-canvas {
+  position: absolute; top: 0; right: 0; width: 62%; height: 100%;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 22%, #000 88%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, #000 22%, #000 88%, transparent 100%);
+}
+.hero .wrap { position: relative; z-index: 2; }
+.chip {
+  display: inline-flex; align-items: center; gap: 14px; padding: 9px 14px;
+  border: 1px solid var(--b4); background: rgba(13, 13, 13, .8);
+  font-family: var(--f-display); font-size: 13px; color: var(--w1); transition: border-color .2s;
+}
+.chip:hover { border-color: rgba(204, 255, 160, .4); }
+.chip .k { font-family: var(--f-mono); font-size: 11.5px; color: var(--g); padding-right: 14px; border-right: 1px solid var(--b4); }
+.hero h1 { margin: 30px 0 0; font-family: var(--f-body); font-weight: 500; }
+.hero h1 .name { display: block; color: var(--g); font-size: clamp(3.6rem, 8vw, 7.2rem); line-height: .9; letter-spacing: -.035em; }
+.hero h1 .subt { display: block; max-width: 640px; margin-top: 20px; font-size: clamp(1.45rem, 2.5vw, 2.3rem); line-height: 1.12; letter-spacing: -.015em; color: var(--w1); }
+.authors { margin-top: 30px; max-width: 600px; }
+.authors .names { margin: 0; font-size: 15px; line-height: 1.8; color: var(--w1-soft); }
+.authors .names span { white-space: nowrap; }
+.authors sup { margin-left: 1px; font-size: .68em; color: var(--g); }
+.authors .affil .note { color: var(--w3); }
+.authors .affil { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 10px 0 0; font-family: var(--f-display); font-size: 12.5px; letter-spacing: .02em; color: var(--muted); }
+.hero .btn-row { margin-top: 38px; }
+@media (max-width: 900px) {
+  .hero { min-height: 0; padding: 120px 0 0; display: flex; flex-direction: column; }
+  #hero-canvas { position: relative; order: 2; width: 100%; height: 300px; margin-top: 8px;
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%, #000 80%, transparent); mask-image: linear-gradient(180deg, transparent, #000 18%, #000 80%, transparent); }
+}
+
+/* ---------- Sections ---------- */
+section.blk { position: relative; padding: clamp(80px, 10vw, 136px) 0; border-bottom: 1px solid var(--b3); }
+section.alt { background: #000; }
+section.grid-bg {
+  background-color: var(--b0);
+  background-image: linear-gradient(var(--grid-major) 1px, transparent 1px), linear-gradient(90deg, var(--grid-major) 1px, transparent 1px);
+  background-size: 96px 96px; background-position: center top;
+}
+.label { margin: 0; font-family: var(--f-display); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--g); }
+.kicker { display: flex; align-items: center; gap: 14px; margin: 0 0 18px; font-family: var(--f-display); font-size: clamp(13px, 1.2vw, 17.28px); letter-spacing: .08em; text-transform: uppercase; color: var(--g); }
+.kicker::before { content: ""; width: 0; height: 1px; background: var(--g); opacity: .7; transition: width 1s var(--ease) .15s; }
+.kicker.vis::before, .vis .kicker::before { width: 34px; }
+h2.title { margin: 0; max-width: 900px; font-family: var(--f-body); font-weight: 500; font-size: clamp(2rem, 3.4vw, 3rem); line-height: 1.02; letter-spacing: -.015em; color: var(--w); }
+p.lead { margin: 20px 0 0; max-width: 640px; font-size: 17px; line-height: 1.6; color: var(--w2-warm); }
+.lead b { color: var(--w1); font-weight: 500; }
+.sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px 48px; flex-wrap: wrap; }
+
+/* Media cards */
+figure { margin: 0; }
+.media { position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--b4); background: var(--b1); }
+.media.paper { background: #fff; border-color: #2c2c2c; padding: clamp(10px, 1.6vw, 22px); }
+.media video, .media img { width: 100%; height: auto; }
+figcaption { margin-top: 12px; display: flex; gap: 14px; font-size: 13px; line-height: 1.55; color: var(--muted); max-width: 900px; }
+figcaption .n { flex: none; font-family: var(--f-mono); font-size: 11px; color: var(--g); padding-top: 2px; letter-spacing: .04em; }
+.zoomable { cursor: zoom-in; }
+
+/* Reveal on scroll (site uses .fi/.vis) */
+.fi { opacity: 0; transform: translateY(26px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
+.fi.vis { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .fi { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
+
+/* ---------- Video ---------- */
+.video-card { margin-top: 32px; }
+.video-card video { aspect-ratio: 16 / 9; background: #050a08; }
+
+/* ---------- Intro ---------- */
+.intro-grid { margin-top: 32px; }
+.summary { margin: 0; max-width: 860px; font-size: clamp(22px, 2.3vw, 32px); line-height: 1.22; letter-spacing: -.01em; color: var(--w1-soft); }
+.summary .acc { color: var(--g); font-weight: 500; }
+.pillars { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+.pillars span { font-family: var(--f-mono); font-size: 11.5px; padding: 6px 10px; border: 1px solid var(--b4); color: var(--w1-olive-soft); }
+.pillars span b { color: var(--g); font-weight: 400; }
+
+/* ---------- Stats band ---------- */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--b4); border-left: 1px solid var(--b4); margin-top: 72px; }
+.stat { padding: 28px 26px 30px; border-right: 1px solid var(--b4); border-bottom: 1px solid var(--b4); background: rgba(8, 8, 8, .6); }
+.stat .k { font-family: var(--f-display); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--w1-olive-soft); }
+.stat .v { margin-top: 18px; font-family: var(--f-body); font-weight: 400; font-size: clamp(38px, 4vw, 56px); line-height: 1; letter-spacing: -.03em; color: var(--w); font-variant-numeric: tabular-nums; }
+.stat .v small { font-size: .4em; letter-spacing: 0; color: var(--g); margin-left: 4px; }
+.stat .d { margin-top: 14px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+.stat .d b { color: var(--w1); font-weight: 500; }
+@media (max-width: 1000px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .stats { grid-template-columns: 1fr; } }
+
+/* ---------- Animated flow diagrams ---------- */
+.flow { position: relative; display: grid; margin-top: 56px; }
+.flow svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
+.wire { fill: none; stroke: rgba(204, 255, 160, .38); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1.5 6; animation: march 1s linear infinite; }
+.wire.verify { stroke: rgba(122, 196, 216, .45); stroke-dasharray: 5 5; animation-duration: 1.6s; }
+.wire.head { stroke-dasharray: none; animation: none; stroke-width: 1.4; }
+@keyframes march { to { stroke-dashoffset: -15; } }
+@media (prefers-reduced-motion: reduce) { .wire { animation: none; } }
+.comet { fill: none; stroke: var(--g); stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 5px rgba(204, 255, 160, .75)); }
+.comet.verify { stroke: var(--bl); filter: drop-shadow(0 0 5px rgba(122, 196, 216, .75)); }
+.wire-label { position: absolute; z-index: 2; transform: translate(-50%, -50%); padding: 3px 8px; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .04em; white-space: nowrap; color: var(--g); background: var(--b0); border: 1px solid #2e3a26; }
+.wire-label.verify { color: var(--bl); border-color: #24414b; }
+.node { position: relative; z-index: 1; background: var(--b1); border: 1px solid var(--b4); padding: 18px 18px 20px; transition: border-color .3s, transform .4s var(--ease); }
+.node:hover { border-color: rgba(204, 255, 160, .45); transform: translateY(-2px); }
+.node.dark { background: #0b1207; border-color: #2a3a20; }
+.node .t { display: block; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .06em; color: var(--g); text-transform: uppercase; }
+.node.bench .t, .node.annot .t { color: var(--bl); }
+.node h4 { margin: 10px 0 0; font-family: var(--f-body); font-weight: 500; font-size: clamp(16px, 1.45vw, 20px); line-height: 1.15; color: var(--w); }
+.node h4 em { font-style: normal; color: var(--g); }
+.node p { margin: 6px 0 0; font-size: 13px; line-height: 1.45; color: var(--muted); }
+.node .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 12px; }
+.node .tags span { font-family: var(--f-mono); font-size: 10.5px; padding: 3px 7px; border: 1px solid var(--b4); color: var(--w1-olive-soft); }
+.pulse { position: absolute; inset: -1px; pointer-events: none; opacity: 0; border: 1px solid var(--g); box-shadow: 0 0 0 1px rgba(204, 255, 160, .25), 0 0 32px rgba(204, 255, 160, .22), inset 0 0 24px rgba(204, 255, 160, .08); }
+.pulse.verify { border-color: var(--bl); box-shadow: 0 0 0 1px rgba(122, 196, 216, .25), 0 0 32px rgba(122, 196, 216, .22), inset 0 0 24px rgba(122, 196, 216, .08); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 28px; font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
+.legend i { display: inline-block; width: 22px; height: 2px; vertical-align: middle; margin-right: 8px; background: var(--g); box-shadow: 0 0 6px rgba(204, 255, 160, .7); }
+.legend i.v { background: repeating-linear-gradient(90deg, var(--bl) 0 4px, transparent 4px 8px); box-shadow: none; }
+
+.eco-flow { grid-template-columns: repeat(4, 1fr); grid-template-areas: "cap foundry data vl" ". annot bench ."; gap: 72px clamp(48px, 6.5vw, 116px); }
+.foundry-flow { grid-template-columns: 1fr 1.25fr 1.25fr 1.05fr; grid-template-areas: "in prep sta world" "in prep dyn world"; gap: 24px clamp(52px, 6.5vw, 116px); }
+.foundry-flow .node[data-id="in"], .foundry-flow .node[data-id="prep"], .foundry-flow .node[data-id="world"] { align-self: center; }
+@media (max-width: 760px) {
+  .eco-flow { grid-template-columns: 1fr 1fr; grid-template-areas: "cap cap" "foundry annot" "data bench" "vl vl"; gap: 46px 18px; }
+  .foundry-flow { grid-template-columns: 1fr 1fr; grid-template-areas: "in in" "prep prep" "sta dyn" "world world"; gap: 40px 14px; }
+  .node { padding: 14px 14px 16px; }
+  .node p { display: none; }
+}
+
+/* ---------- Two-col media rows ---------- */
+.two-col { display: grid; grid-template-columns: .9fr 1.25fr; gap: clamp(28px, 4vw, 64px); align-items: center; margin-top: 72px; }
+@media (max-width: 960px) { .two-col { grid-template-columns: 1fr; gap: 24px; } }
+h3.row-title { margin: 0; font-family: var(--f-body); font-weight: 500; font-size: clamp(24px, 2.3vw, 32px); line-height: 1.08; letter-spacing: -.01em; color: var(--w); }
+p.one { margin: 12px 0 0; max-width: 460px; font-size: 16px; line-height: 1.55; color: var(--w2-warm); }
+.mini-stats { display: flex; flex-wrap: wrap; gap: 28px 40px; margin-top: 28px; }
+.mini-stats div { min-width: 90px; }
+.mini-stats .v { font-family: var(--f-body); font-size: clamp(28px, 2.6vw, 38px); line-height: 1; letter-spacing: -.02em; color: var(--w); font-variant-numeric: tabular-nums; }
+.mini-stats .k { margin-top: 8px; font-family: var(--f-display); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--w1-olive-soft); }
+
+/* ---------- Foundry stages ---------- */
+.stage { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.3fr); gap: clamp(28px, 4vw, 64px); padding: 64px 0; border-top: 1px solid var(--b3); align-items: center; }
+.stage:first-of-type { margin-top: 72px; }
+.stage-idx { display: flex; align-items: baseline; gap: 14px; margin-bottom: 14px; }
+.stage-idx .no { font-family: var(--f-display); font-size: 13px; color: var(--g); }
+.stage-idx .tg { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .06em; color: var(--w3); text-transform: uppercase; }
+@media (max-width: 960px) { .stage { grid-template-columns: 1fr; padding: 48px 0; } }
+
+/* Step chips that light up in sequence */
+.seq { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 26px; }
+.seq span { font-family: var(--f-mono); font-size: 11px; padding: 6px 9px; border: 1px solid var(--b4); color: var(--w3); transition: color .35s, border-color .35s, background .35s; }
+.seq span.on { color: var(--go); background: var(--g); border-color: var(--g); }
+.seq span.done { color: var(--w1-olive-soft); border-color: #2e3a26; }
+.seq i { width: 10px; height: 1px; background: var(--b4); }
+
+/* Static funnel */
+.funnel { margin-top: 26px; border: 1px solid var(--b4); }
+.f-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; padding: 11px 14px; border-top: 1px solid var(--b3); position: relative; }
+.f-row:first-child { border-top: 0; }
+.f-row .k { font-size: 13px; color: var(--muted); }
+.f-row .v { font-family: var(--f-body); font-size: 20px; color: var(--w); font-variant-numeric: tabular-nums; }
+.f-row .bar { position: absolute; left: 0; bottom: -1px; height: 1px; width: 0; background: var(--g); transition: width 1.2s var(--ease); }
+.funnel.go .f-row .bar { width: var(--w); }
+.f-row.final { background: rgba(204, 255, 160, .06); }
+.f-row.final .k { color: var(--w1); }
+.f-row.final .v { color: var(--g); font-size: 26px; }
+.vlm { display: flex; gap: 14px; font-family: var(--f-mono); font-size: 12px; }
+.vlm .ok { color: var(--g); } .vlm .fx { color: #e8c88a; } .vlm .no { color: #e8908a; }
+
+/* Segmented media toggle */
+.seg { display: inline-flex; border: 1px solid var(--b4); margin-bottom: 12px; }
+.seg button { appearance: none; border: 0; background: transparent; color: var(--muted); cursor: pointer; font-family: var(--f-display); font-size: 12.5px; padding: 8px 14px; transition: background .2s, color .2s; }
+.seg button[aria-selected="true"] { background: var(--g); color: var(--go); font-weight: 500; }
+.seg button:not([aria-selected="true"]):hover { color: var(--w1); }
+
+/* ---------- Data ---------- */
+.layers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--b4); border: 1px solid var(--b4); margin-top: 56px; }
+.layer { background: var(--b1); padding: 22px 22px 24px; }
+.layer .hd { display: flex; align-items: center; gap: 10px; }
+.layer .hd .i { width: 24px; height: 24px; display: grid; place-items: center; border: 1px solid rgba(204, 255, 160, .4); font-family: var(--f-mono); font-size: 11px; color: var(--g); }
+.layer .hd h4 { margin: 0; font-family: var(--f-display); font-weight: 500; font-size: 15px; color: var(--w1); }
+.layer dl { margin: 18px 0 0; }
+.layer .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 10px 0 8px; border-top: 1px solid var(--b3); }
+.layer dt { font-size: 13px; color: var(--muted); }
+.layer dd { margin: 0; font-family: var(--f-body); font-size: 20px; color: var(--w); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.layer .bar { height: 2px; background: var(--b3); }
+.layer .bar i { display: block; height: 100%; width: 0; background: var(--g); opacity: .8; transition: width 1.4s var(--ease); }
+.layers.go .bar i { width: var(--w); }
+.layers.go .layer:nth-child(2) .bar i { transition-delay: .12s; } .layers.go .layer:nth-child(3) .bar i { transition-delay: .24s; } .layers.go .layer:nth-child(4) .bar i { transition-delay: .36s; }
+@media (max-width: 1000px) { .layers { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .layers { grid-template-columns: 1fr; } }
+
+/* QA typing demo */
+.qa-demo { display: grid; grid-template-columns: 260px 1fr; margin-top: 56px; border: 1px solid var(--b4); background: var(--b1); }
+.qa-types { border-right: 1px solid var(--b4); }
+.qa-types button { position: relative; display: block; width: 100%; text-align: left; appearance: none; background: none; border: 0; border-top: 1px solid var(--b3); cursor: pointer; padding: 16px 18px; font-family: var(--f-display); font-size: 14px; color: var(--muted); transition: color .2s, background .2s; overflow: hidden; }
+.qa-types button:first-child { border-top: 0; }
+.qa-types button .n { font-family: var(--f-mono); font-size: 10.5px; margin-right: 10px; color: var(--w3); }
+.qa-types button[aria-selected="true"] { color: var(--w); background: #10140d; }
+.qa-types button[aria-selected="true"] .n { color: var(--g); }
+.qa-types button .pb { position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--g); }
+.qa-screen { padding: clamp(22px, 3vw, 40px); min-height: 250px; display: flex; flex-direction: column; justify-content: center; }
+.qa-line { font-family: var(--f-mono); font-size: clamp(15px, 1.5vw, 19px); line-height: 1.5; min-height: 1.5em; }
+.qa-line .p { color: var(--w3); margin-right: 12px; }
+.qa-q { color: var(--w1); }
+.qa-a { color: var(--g); margin-top: 14px; opacity: 0; transform: translateY(6px); transition: opacity .5s, transform .5s var(--ease); }
+.qa-a.show { opacity: 1; transform: none; }
+.caret { display: inline-block; width: .55em; height: 1.1em; vertical-align: -.18em; background: var(--g); margin-left: 2px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.qa-ev { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 6px; font-family: var(--f-mono); font-size: 10.5px; color: var(--w3); opacity: 0; transition: opacity .5s .2s; }
+.qa-ev.show { opacity: 1; }
+.qa-ev span { padding: 3px 8px; border: 1px solid var(--b4); color: var(--w1-olive-soft); }
+.qa-foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 16px; font-size: 13px; color: var(--muted); }
+.qa-foot button { appearance: none; background: none; border: 0; padding: 0; cursor: pointer; font-family: var(--f-display); font-size: 13px; color: var(--g); }
+@media (max-width: 760px) { .qa-demo { grid-template-columns: 1fr; } .qa-types { border-right: 0; border-bottom: 1px solid var(--b4); display: grid; grid-template-columns: 1fr 1fr; } .qa-types button { border-top: 0; border-left: 1px solid var(--b3); padding: 12px 14px; font-size: 13px; } }
+
+/* ---------- Results ---------- */
+.tabs { display: flex; flex-wrap: wrap; margin-top: 48px; border-bottom: 1px solid var(--b4); }
+.tabs button { appearance: none; background: none; border: 0; cursor: pointer; position: relative; padding: 14px 22px 16px; font-family: var(--f-display); font-size: 14px; color: var(--muted); transition: color .2s; }
+.tabs button .n { font-family: var(--f-mono); font-size: 11px; margin-right: 8px; color: var(--w3); }
+.tabs button[aria-selected="true"] { color: var(--w); }
+.tabs button[aria-selected="true"] .n { color: var(--g); }
+.tabs button[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--g); }
+.tabs button:hover { color: var(--w1); }
+.panel { padding-top: 36px; }
+.panel[hidden] { display: none; }
+.headline { display: grid; grid-template-columns: 1fr auto; gap: 16px 48px; align-items: end; margin-bottom: 28px; }
+.headline p { margin: 0; max-width: 640px; font-size: clamp(18px, 1.6vw, 21px); line-height: 1.35; color: var(--w1-soft); }
+.headline p .acc { color: var(--g); }
+.big-delta { text-align: right; }
+.big-delta .v { font-family: var(--f-body); font-size: clamp(44px, 5vw, 72px); line-height: .9; letter-spacing: -.04em; color: var(--g); font-variant-numeric: tabular-nums; }
+.big-delta .k { margin-top: 8px; font-family: var(--f-display); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--w1-olive-soft); }
+@media (max-width: 760px) { .headline { grid-template-columns: 1fr; } .big-delta { text-align: left; } }
+
+/* Bar small multiples: emphasis encoding, ours in accent, baselines in gray */
+.bars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--b4); border: 1px solid var(--b4); }
+.bcard { background: var(--b1); padding: 20px 20px 16px; }
+.bcard .bk { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-family: var(--f-display); font-size: 12px; letter-spacing: .06em; color: var(--w1-olive-soft); }
+.bcard .bk .bd { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0; color: var(--w1); }
+.brow { display: grid; grid-template-columns: 84px 1fr 46px; align-items: center; gap: 10px; padding: 8px 0; cursor: default; }
+.brow .bn { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.brow.ours .bn { color: var(--w1); font-weight: 500; }
+.brow .bt { position: relative; height: 10px; }
+.brow .bt i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--base-bar); border-radius: 0 4px 4px 0; transition: width 1.1s var(--ease); }
+.brow.b2 .bt i { background: var(--base-bar2); }
+.brow.ours .bt i { background: var(--g); box-shadow: 0 0 14px rgba(204, 255, 160, .25); }
+.bars.go .brow .bt i { width: var(--w); }
+.bars.go .brow:nth-child(3) .bt i { transition-delay: .08s; } .bars.go .brow:nth-child(4) .bt i { transition-delay: .16s; }
+.brow .bv { text-align: right; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.brow.ours .bv { color: var(--w); font-weight: 500; }
+.brow:hover .bn, .brow:hover .bv { color: var(--w); }
+.bscale { display: grid; grid-template-columns: 84px 1fr 46px; gap: 10px; margin-top: 4px; font-family: var(--f-mono); font-size: 9.5px; color: var(--w3); }
+.bscale span:nth-child(2) { display: flex; justify-content: space-between; border-top: 1px solid var(--b3); padding-top: 4px; }
+@media (max-width: 1100px) { .bars { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .bars { grid-template-columns: 1fr; } }
+.tip { position: fixed; z-index: 90; pointer-events: none; padding: 7px 10px; background: #151515; border: 1px solid var(--b4); font-family: var(--f-mono); font-size: 11.5px; color: var(--w1); opacity: 0; transition: opacity .12s; white-space: nowrap; }
+.tip.on { opacity: 1; }
+
+details.full { margin-top: 18px; border: 1px solid var(--b4); }
+details.full summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; padding: 13px 18px; font-family: var(--f-display); font-size: 13px; color: var(--w1); }
+details.full summary::-webkit-details-marker { display: none; }
+details.full summary::after { content: "+"; font-family: var(--f-mono); color: var(--g); }
+details.full[open] summary::after { content: "−"; }
+details.full summary:hover { color: var(--g); }
+.tbl-wrap { overflow-x: auto; border-top: 1px solid var(--b4); -webkit-overflow-scrolling: touch; }
+table.res { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; min-width: 760px; }
+table.res th, table.res td { padding: 9px 12px; text-align: center; white-space: nowrap; }
+table.res thead th { font-family: var(--f-display); font-weight: 500; font-size: 11.5px; letter-spacing: .06em; color: var(--w1-olive-soft); border-bottom: 1px solid var(--b4); }
+table.res thead tr:first-child th { font-size: 12px; color: var(--w1); letter-spacing: .08em; text-transform: uppercase; padding-top: 14px; }
+table.res thead tr.grp th { color: var(--muted); font-weight: 400; }
+table.res th:first-child, table.res td:first-child { text-align: left; padding-left: 18px; }
+table.res tbody td { color: var(--w2); border-top: 1px solid var(--b3); }
+table.res tbody td:first-child { color: var(--w1); font-family: var(--f-display); }
+table.res .sep td { padding: 12px 18px 6px; text-align: left; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--w3); border-top: 1px solid var(--b4); }
+table.res .bl { border-left: 1px solid var(--b4); }
+table.res td.b1 { background: var(--g); color: var(--go); font-weight: 700; }
+table.res td.b2 { background: rgba(204, 255, 160, .13); color: var(--g); }
+table.res tr.ours td:first-child { color: var(--g); font-weight: 700; box-shadow: inset 2px 0 0 var(--g); }
+.tbl-note { margin: 0; padding: 10px 18px 14px; font-size: 12px; line-height: 1.6; color: var(--w3); }
+.tbl-note .sw { display: inline-block; width: 18px; height: 10px; vertical-align: -1px; margin: 0 4px 0 2px; }
+.tbl-note .sw.a { background: var(--g); } .tbl-note .sw.b { background: rgba(204, 255, 160, .25); }
+.panel figure { margin-top: 36px; }
+
+/* ---------- Citation ---------- */
+.cite { position: relative; margin-top: 32px; border: 1px solid var(--b4); background: var(--b1); }
+.cite pre { margin: 0; padding: 26px 28px 28px; overflow-x: auto; font-family: var(--f-mono); font-size: 13px; line-height: 1.75; color: var(--w1-olive-soft); }
+.cite pre .k { color: var(--g); }
+.cite .copy { position: absolute; top: 14px; right: 14px; appearance: none; cursor: pointer; font-family: var(--f-display); font-size: 12px; padding: 7px 12px; color: var(--w1); background: #1e1e1e; border: 1px solid var(--b4); transition: border-color .2s, color .2s; }
+.cite .copy:hover { border-color: var(--g); color: var(--g); }
+
+
+/* ---------- Footer ---------- */
+footer { background: #000; padding: 80px 0 0; overflow: hidden; }
+.f-mark { height: clamp(90px, 18vw, 300px); background: #121212;
+  -webkit-mask: url(assets/img/ropedia_logo.svg) no-repeat center bottom / contain; mask: url(assets/img/ropedia_logo.svg) no-repeat center bottom / contain; }
+.f-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 22px 0 28px; margin-top: 28px; border-top: 1px solid var(--b3); font-size: 12.5px; color: var(--w3); }
+
+/* ---------- Lightbox ---------- */
+.lb { position: fixed; inset: 0; z-index: 100; display: none; place-items: center; padding: 4vh 3vw; background: rgba(0, 0, 0, .9); cursor: zoom-out; }
+.lb.open { display: grid; }
+.lb img { max-width: 100%; max-height: 92vh; background: #fff; border-radius: 8px; padding: 10px; }
+</style>
+<noscript><style>.fi { opacity: 1 !important; transform: none !important; } .kicker::before { width: 34px; }</style></noscript>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav" aria-label="Main">
+  <div class="wrap">
+    <a href="https://ropedia.com/" class="logo" aria-label="Ropedia home"></a>
+    <img class="partner-logo" src="assets/img/ntu_logo_reversed.png" alt="Nanyang Technological University" width="301" height="108">
+  </div>
+  <div class="progress" aria-hidden="true"></div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <a class="chip" href="https://ropedia.com/research"><span class="k">Research</span>Technical Report · 2026
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></a>
+    <h1><span class="name">Holi-World</span><span class="subt">Building Holistic World Intelligence from <span style="white-space:nowrap">Human-Ego</span> Experience</span></h1>
+    <div class="authors">
+      <p class="names"><span>Hao Li<sup>1,2*</sup></span>, <span>Xiyuan Zheng<sup>1,2*</sup></span>, <span>Yuanyuan Gao<sup>1,3*</sup></span>, <span>Yalun Dai<sup>1,2</sup></span>, <span>Xinhao Ji<sup>1,4</sup></span>, <span>Xuan-Li Chen<sup>1</sup></span>, <span>Jing Zhao<sup>1</sup></span>, <span>Fangzhou Hong<sup>1</sup></span>, <span>Zhaoxi Chen<sup>1</sup></span>, <span>Ziwei Liu<sup>1,2†</sup></span></p>
+      <p class="affil"><span><sup>1</sup>Ropedia</span><span><sup>2</sup>NTU</span><span><sup>3</sup>HKUST</span><span><sup>4</sup>PKU</span><span class="note"><sup>*</sup>Equal contribution</span><span class="note"><sup>†</sup>Corresponding author</span></p>
+    </div>
+    <div class="btn-row">
+      <a class="btn primary" href="https://github.com/Ropedia/holi-world" target="_blank" rel="noopener">Code
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></a>
+      <a class="btn" href="https://huggingface.co/datasets/Ropedia/HoliWorld-Data" target="_blank" rel="noopener">Dataset
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></a>
+      <a class="btn" href="https://huggingface.co/Ropedia/HoliWorld-VL-4B" target="_blank" rel="noopener">Model
+        <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"/></svg></a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ VIDEO ============ -->
+<section class="blk alt" id="video">
+  <div class="wrap">
+    <p class="label fi">// Paper Video</p>
+    <div class="media video-card fi">
+      <video controls playsinline preload="none" poster="assets/video/holiworld_video_poster.jpg">
+        <source src="assets/video/holiworld_video.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</section>
+
+<!-- ============ INTRODUCTION ============ -->
+<section class="blk" id="introduction">
+  <div class="wrap">
+    <p class="label fi">// Introduction</p>
+    <div class="intro-grid">
+      <div>
+        <p class="summary fi">Holi-World turns egocentric recordings into <span class="acc">static 3D objects</span>, <span class="acc">dynamic 4D tracks</span> and grounded training data, without manual labels.</p>
+        <div class="pillars fi"><span><b>Foundry</b> auto-annotation</span><span><b>Data</b> ~80K grounded QA</span><span><b>VL-4B</b> model</span><span><b>Bench</b> human-annotated eval</span></div>
+      </div>
+    </div>
+
+    <div class="stats fi">
+      <div class="stat"><div class="k">Static 3D · ScanNet</div><div class="v"><span data-count="0.55" data-dec="2">0.55</span><small>AP<sub>50</sub></small></div><div class="d"><b>4.6×</b> the strongest baseline</div></div>
+      <div class="stat"><div class="k">Dynamic tracking · ADT</div><div class="v"><span data-count="54.31" data-dec="2">54.31</span><small>% HOTA</small></div><div class="d">vs. 36.00% with <b>GT initialization</b></div></div>
+      <div class="stat"><div class="k">Reasoning · Holi-World-Bench</div><div class="v"><span data-count="78.02" data-dec="2">78.02</span><small>% F1</small></div><div class="d">4B model <b>beats zero-shot 27B</b></div></div>
+      <div class="stat"><div class="k">Grounded supervision</div><div class="v"><span data-count="80" data-prefix="~" data-suffix="K">~80K</span><small>QA</small></div><div class="d">from <b>~100 scenes</b></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ECOSYSTEM ============ -->
+<section class="blk alt" id="ecosystem">
+  <div class="wrap">
+    <p class="kicker fi">The Ecosystem</p>
+    <h2 class="title fi">From experience capture to world intelligence</h2>
+    <p class="lead fi">Five parts, two verification loops.</p>
+
+    <div class="flow eco-flow fi" data-flow="eco">
+      <svg class="wires" aria-hidden="true"></svg>
+      <div class="node" data-id="cap" style="grid-area:cap"><span class="t">Hardware</span><h4>Ego Capture Device</h4><p>Stereo RGB + IMU, in the wild</p></div>
+      <div class="node dark" data-id="foundry" style="grid-area:foundry"><span class="t">Pipeline</span><h4>Holi-World-<em>Foundry</em></h4><p>Reconstruction · 3D/4D annotation</p></div>
+      <div class="node" data-id="data" style="grid-area:data"><span class="t">Dataset</span><h4>Holi-World-<em>Data</em></h4><p>Geometry · semantics · QA</p></div>
+      <div class="node dark" data-id="vl" style="grid-area:vl"><span class="t">Model</span><h4>Holi-World-<em>VL</em></h4><p>Spatial-temporal reasoning</p></div>
+      <div class="node annot" data-id="annot" style="grid-area:annot"><span class="t">Held-out captures</span><h4>Human Annotation</h4><p>Independent labels</p></div>
+      <div class="node bench" data-id="bench" style="grid-area:bench"><span class="t">Benchmark</span><h4>Holi-World-<em>Bench</em></h4><p>Reference for both loops</p></div>
+    </div>
+    <div class="legend fi"><span><i></i>data flow</span><span><i class="v"></i>verification</span></div>
+
+    <div class="two-col">
+      <div class="fi">
+        <h3 class="row-title">Captured in the wild</h3>
+        <p class="one">Mapping walks record the room. Interaction sessions record the hands at work.</p>
+        <div class="mini-stats">
+          <div><div class="v" data-count="100" data-prefix="~">~100</div><div class="k">Scenes</div></div>
+          <div><div class="v" data-count="444">444</div><div class="k">Ego-videos</div></div>
+          <div><div class="v" data-count="1.32" data-dec="2" data-suffix="M">1.32M</div><div class="k">RGB-D frames</div></div>
+        </div>
+      </div>
+      <figure class="fi">
+        <div class="media"><video class="loopvid" muted loop playsinline preload="none" poster="assets/video/03_capture.jpg"><source src="assets/video/03_capture.mp4" type="video/mp4"></video></div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOUNDRY ============ -->
+<section class="blk grid-bg" id="foundry">
+  <div class="wrap">
+    <p class="kicker fi">Holi-World-Foundry</p>
+    <h2 class="title fi">An engine that writes world records</h2>
+    <p class="lead fi">Reconstruct once, then split: <b>static</b> objects persist, <b>dynamic</b> objects move.</p>
+
+    <div class="flow foundry-flow fi" data-flow="foundry">
+      <svg class="wires" aria-hidden="true"></svg>
+      <div class="node" data-id="in" style="grid-area:in"><span class="t">Input</span><h4>Stereo RGB + IMU</h4></div>
+      <div class="node dark" data-id="prep" style="grid-area:prep"><span class="t">01 · Shared prep</span><h4>Geometry &amp; semantic cues</h4><div class="tags"><span>VI-SLAM</span><span>DA3</span><span>3DGS</span><span>VLM</span></div></div>
+      <div class="node" data-id="sta" style="grid-area:sta"><span class="t">02 · Static</span><h4>Persistent 3D objects</h4><div class="tags"><span>detect</span><span>merge</span><span>verify</span></div></div>
+      <div class="node" data-id="dyn" style="grid-area:dyn"><span class="t">03 · Dynamic</span><h4>4D object tracks</h4><div class="tags"><span>associate</span><span>track</span><span>lift</span></div></div>
+      <div class="node dark" data-id="world" style="grid-area:world"><span class="t">04 · Output</span><h4>Unified world state</h4><div class="tags"><span>IDs</span><span>boxes</span><span>tracks</span><span>evidence</span></div></div>
+    </div>
+
+    <!-- Stage 01 -->
+    <div class="stage">
+      <div class="fi">
+        <div class="stage-idx"><span class="no">/01</span><span class="tg">Shared preparation</span></div>
+        <h3 class="row-title">Build the world first</h3>
+        <p class="one">Poses, depth and a Gaussian scene, then VLM cues decide which branch each object takes.</p>
+        <div class="seq" data-seq><span>VI-SLAM poses</span><i></i><span>DA3 depth</span><i></i><span>3DGS scene</span><i></i><span>VLM routing</span></div>
+      </div>
+      <figure class="fi">
+        <div class="media"><video class="loopvid" muted loop playsinline preload="none" poster="assets/video/05_foundry_prep.jpg"><source src="assets/video/05_foundry_prep.mp4" type="video/mp4"></video></div>
+      </figure>
+    </div>
+
+    <!-- Stage 02 -->
+    <div class="stage">
+      <div class="fi">
+        <div class="stage-idx"><span class="no">/02</span><span class="tg">Static perception</span></div>
+        <h3 class="row-title">Two detectors, one VLM inspector</h3>
+        <p class="one">Real counts from one room:</p>
+        <div class="funnel" data-funnel>
+          <div class="f-row"><span class="k">Boxer 2D lifts · left + right</span><span class="v" data-count="1684">1,684</span><span class="bar" style="--w:100%"></span></div>
+          <div class="f-row"><span class="k">Associated + TR3D, merged</span><span class="v" data-count="30">30</span><span class="bar" style="--w:46%"></span></div>
+          <div class="f-row"><span class="k">After point-support filter</span><span class="v" data-count="22">22</span><span class="bar" style="--w:42%"></span></div>
+          <div class="f-row"><span class="k">VLM check</span><span class="vlm"><span class="ok">✓ <b data-count="17">17</b></span><span class="fx">✎ <b data-count="4">4</b></span><span class="no">✕ <b data-count="1">1</b></span></span><span class="bar" style="--w:41%"></span></div>
+          <div class="f-row final"><span class="k">Static 3D objects</span><span class="v" data-count="21">21</span><span class="bar" style="--w:41%"></span></div>
+        </div>
+      </div>
+      <figure class="fi">
+        <div class="seg" role="tablist" aria-label="Static perception media">
+          <button role="tab" aria-selected="true" data-show="s-vid">Real outputs</button>
+          <button role="tab" aria-selected="false" data-show="s-fig">Pipeline</button>
+        </div>
+        <div class="media" data-pane="s-vid"><video class="loopvid" muted loop playsinline preload="none" poster="assets/video/07_static.jpg"><source src="assets/video/07_static.mp4" type="video/mp4"></video></div>
+        <div class="media paper zoomable" data-pane="s-fig" hidden><img src="assets/img/06_static_pipeline.png" alt="Static object perception pipeline: dual-path candidates, merge and filter, VLM validation with one fallback retry." loading="lazy" width="1600" height="500"></div>
+      </figure>
+    </div>
+
+    <!-- Stage 03 -->
+    <div class="stage">
+      <div class="fi">
+        <div class="stage-idx"><span class="no">/03</span><span class="tg">Dynamic perception</span></div>
+        <h3 class="row-title">Same cup, same ID, even after it leaves the view</h3>
+        <div class="seq" data-seq><span>Interaction grounding</span><i></i><span>Identity association</span><i></i><span>SAM mask tracking</span><i></i><span>3D back-projection</span><i></i><span>Per-frame OBB</span><i></i><span>4D track</span></div>
+      </div>
+      <figure class="fi">
+        <div class="seg" role="tablist" aria-label="Dynamic perception media">
+          <button role="tab" aria-selected="true" data-show="d-vid">Real outputs</button>
+          <button role="tab" aria-selected="false" data-show="d-fig">Pipeline</button>
+        </div>
+        <div class="media" data-pane="d-vid"><video class="loopvid" muted loop playsinline preload="none" poster="assets/video/09_dynamic.jpg"><source src="assets/video/09_dynamic.mp4" type="video/mp4"></video></div>
+        <div class="media paper zoomable" data-pane="d-fig" hidden><img src="assets/img/08_dynamic_pipeline.png" alt="Dynamic object perception pipeline: identity association, mask propagation, back-projection, per-frame OBBs and 4D tracks." loading="lazy" width="1600" height="500"></div>
+      </figure>
+    </div>
+
+    <!-- Stage 04 -->
+    <div class="stage">
+      <div class="fi">
+        <div class="stage-idx"><span class="no">/04</span><span class="tg">Unified world state</span></div>
+        <h3 class="row-title">One record, every label traceable</h3>
+        <p class="one">One office, one coordinate frame:</p>
+        <div class="mini-stats">
+          <div><div class="v" data-count="880">880</div><div class="k">Camera poses</div></div>
+          <div><div class="v" data-count="95">95</div><div class="k">Static objects</div></div>
+          <div><div class="v">A→B</div><div class="k">Tracked trajectory</div></div>
+        </div>
+      </div>
+      <figure class="fi">
+        <div class="media"><video class="loopvid" muted loop playsinline preload="none" poster="assets/video/10_unified.jpg"><source src="assets/video/10_unified.mp4" type="video/mp4"></video></div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DATA ============ -->
+<section class="blk alt" id="data">
+  <div class="wrap">
+    <p class="kicker fi">Holi-World-Data</p>
+    <h2 class="title fi">Four levels of grounded supervision</h2>
+    <p class="lead fi">Every example links back to the objects, times and frames behind it.</p>
+
+    <div class="layers fi" data-layers>
+      <div class="layer">
+        <div class="hd"><span class="i">1</span><h4>Raw data</h4></div>
+        <dl>
+          <div class="row"><dt>Scenes</dt><dd data-count="100" data-prefix="~">~100</dd></div><div class="bar"><i style="--w:34%"></i></div>
+          <div class="row"><dt>Ego-videos</dt><dd data-count="444">444</dd></div><div class="bar"><i style="--w:44%"></i></div>
+        </dl>
+      </div>
+      <div class="layer">
+        <div class="hd"><span class="i">2</span><h4>Geometry</h4></div>
+        <dl>
+          <div class="row"><dt>3DGS scenes</dt><dd data-count="100" data-prefix="~">~100</dd></div><div class="bar"><i style="--w:34%"></i></div>
+          <div class="row"><dt>RGB frames</dt><dd data-count="1322" data-suffix="K">1,322K</dd></div><div class="bar"><i style="--w:100%"></i></div>
+          <div class="row"><dt>Depth maps</dt><dd data-count="1322" data-suffix="K">1,322K</dd></div><div class="bar"><i style="--w:100%"></i></div>
+          <div class="row"><dt>Camera poses</dt><dd data-count="1322" data-suffix="K">1,322K</dd></div><div class="bar"><i style="--w:100%"></i></div>
+        </dl>
+      </div>
+      <div class="layer">
+        <div class="hd"><span class="i">3</span><h4>Semantics</h4></div>
+        <dl>
+          <div class="row"><dt>2D boxes</dt><dd data-count="90" data-prefix="~" data-suffix="K">~90K</dd></div><div class="bar"><i style="--w:83%"></i></div>
+          <div class="row"><dt>Static 3D boxes</dt><dd data-count="2466">2,466</dd></div><div class="bar"><i style="--w:57%"></i></div>
+          <div class="row"><dt>Dynamic 4D tracks</dt><dd data-count="2095">2,095</dd></div><div class="bar"><i style="--w:56%"></i></div>
+        </dl>
+      </div>
+      <div class="layer">
+        <div class="hd"><span class="i">4</span><h4>Spatial intelligence</h4></div>
+        <dl>
+          <div class="row"><dt>3D grounding</dt><dd data-count="4" data-prefix="~" data-suffix="K">~4K</dd></div><div class="bar"><i style="--w:60%"></i></div>
+          <div class="row"><dt>Captions</dt><dd data-count="80" data-prefix="~" data-suffix="K">~80K</dd></div><div class="bar"><i style="--w:82%"></i></div>
+          <div class="row"><dt>Static QA</dt><dd data-count="13647">13,647</dd></div><div class="bar"><i style="--w:69%"></i></div>
+          <div class="row"><dt>Dynamic QA</dt><dd data-count="64409">64,409</dd></div><div class="bar"><i style="--w:80%"></i></div>
+        </dl>
+      </div>
+    </div>
+
+    <!-- QA examples are taken from the paper's Figure 1. -->
+    <div class="qa-demo fi" data-qa>
+      <div class="qa-types" role="tablist" aria-label="QA examples">
+        <button role="tab" aria-selected="true"><span class="n">01</span>Spatial relation<span class="pb"></span></button>
+        <button role="tab" aria-selected="false"><span class="n">02</span>Temporal reasoning<span class="pb"></span></button>
+        <button role="tab" aria-selected="false"><span class="n">03</span>Object grounding<span class="pb"></span></button>
+        <button role="tab" aria-selected="false"><span class="n">04</span>Trajectory grounding<span class="pb"></span></button>
+      </div>
+      <div class="qa-screen" aria-live="polite">
+        <div class="qa-line"><span class="p">Q</span><span class="qa-q">What is behind the bed?</span><span class="caret"></span></div>
+        <div class="qa-line qa-a show"><span class="p">A</span><span class="qa-ans">The curtain.</span></div>
+        <div class="qa-ev show"><span>static 3D boxes</span><span>camera pose</span></div>
+      </div>
+    </div>
+    <div class="qa-foot fi"><span>30 QA types across static mapping, trajectories and captions, including hard negatives.</span><button type="button" data-open="assets/img/12_qa_types.jpg">See all 30 types →</button></div>
+  </div>
+</section>
+
+<!-- ============ RESULTS ============ -->
+<section class="blk" id="results">
+  <div class="wrap">
+    <p class="kicker fi">Experiments</p>
+    <h2 class="title fi">Accurate annotations, real learning value</h2>
+
+    <div class="tabs fi" role="tablist" aria-label="Results">
+      <button role="tab" aria-selected="true" aria-controls="p-static" id="t-static"><span class="n">01</span>Static 3D perception</button>
+      <button role="tab" aria-selected="false" aria-controls="p-dynamic" id="t-dynamic"><span class="n">02</span>Dynamic tracking</button>
+      <button role="tab" aria-selected="false" aria-controls="p-reason" id="t-reason"><span class="n">03</span>Spatial-temporal reasoning</button>
+    </div>
+
+    <!-- Static -->
+    <div class="panel" role="tabpanel" id="p-static" aria-labelledby="t-static">
+      <div class="headline">
+        <p>Best AP on <span class="acc">all three datasets</span>.</p>
+        <div class="big-delta"><div class="v">4.6×</div><div class="k">AP<sub>50</sub> on ScanNet</div></div>
+      </div>
+      <div class="bars" data-bars>
+        <div class="bcard"><div class="bk"><span>ScanNet · AP<sub>25</sub></span><span class="bd">+0.28</span></div>
+          <div class="brow ours" data-tip="Holi-World · ScanNet AP25 · 0.68"><span class="bn">Holi-World</span><span class="bt"><i style="--w:68%"></i></span><span class="bv">0.68</span></div>
+          <div class="brow" data-tip="Map-Det3D · ScanNet AP25 · 0.40"><span class="bn">Map-Det3D</span><span class="bt"><i style="--w:40%"></i></span><span class="bv">0.40</span></div>
+          <div class="bscale"><span></span><span><b>0</b><b>1.0</b></span><span></span></div></div>
+        <div class="bcard"><div class="bk"><span>ScanNet · AP<sub>50</sub></span><span class="bd">×4.6</span></div>
+          <div class="brow ours" data-tip="Holi-World · ScanNet AP50 · 0.55"><span class="bn">Holi-World</span><span class="bt"><i style="--w:55%"></i></span><span class="bv">0.55</span></div>
+          <div class="brow" data-tip="Map-Det3D · ScanNet AP50 · 0.12"><span class="bn">Map-Det3D</span><span class="bt"><i style="--w:12%"></i></span><span class="bv">0.12</span></div>
+          <div class="bscale"><span></span><span><b>0</b><b>1.0</b></span><span></span></div></div>
+        <div class="bcard"><div class="bk"><span>ScanNet++ · AP<sub>25</sub></span><span class="bd">+0.07</span></div>
+          <div class="brow ours" data-tip="Holi-World · ScanNet++ AP25 · 0.30"><span class="bn">Holi-World</span><span class="bt"><i style="--w:30%"></i></span><span class="bv">0.30</span></div>
+          <div class="brow" data-tip="Boxer · ScanNet++ AP25 · 0.23"><span class="bn">Boxer</span><span class="bt"><i style="--w:23%"></i></span><span class="bv">0.23</span></div>
+          <div class="bscale"><span></span><span><b>0</b><b>1.0</b></span><span></span></div></div>
+        <div class="bcard"><div class="bk"><span>Bench · AP<sub>25</sub></span><span class="bd">+0.08</span></div>
+          <div class="brow ours" data-tip="Holi-World · Holi-World-Bench AP25 · 0.24"><span class="bn">Holi-World</span><span class="bt"><i style="--w:24%"></i></span><span class="bv">0.24</span></div>
+          <div class="brow" data-tip="Boxer · Holi-World-Bench AP25 · 0.16"><span class="bn">Boxer</span><span class="bt"><i style="--w:16%"></i></span><span class="bv">0.16</span></div>
+          <div class="bscale"><span></span><span><b>0</b><b>1.0</b></span><span></span></div></div>
+      </div>
+      <details class="full">
+        <summary>Full table · 9 methods × 3 datasets</summary>
+        <div class="tbl-wrap">
+          <table class="res">
+            <thead>
+              <tr><th></th><th colspan="3" class="bl">ScanNet</th><th colspan="3" class="bl">ScanNet++</th><th colspan="3" class="bl">Holi-World-Bench</th></tr>
+              <tr class="grp"><th>Method</th><th class="bl">AP<sub>25</sub>↑</th><th>AP<sub>50</sub>↑</th><th>mIoU↑</th><th class="bl">AP<sub>25</sub>↑</th><th>AP<sub>50</sub>↑</th><th>mIoU↑</th><th class="bl">AP<sub>25</sub>↑</th><th>AP<sub>50</sub>↑</th><th>mIoU↑</th></tr>
+            </thead>
+            <tbody>
+              <tr class="sep"><td colspan="10">Model-based methods</td></tr>
+              <tr><td>SpatialLM</td><td class="bl">0.18</td><td>0.09</td><td class="b2">0.52</td><td class="bl">0.03</td><td>0.01</td><td>0.50</td><td class="bl">0.04</td><td>0.00</td><td>0.23</td></tr>
+              <tr><td>LLaVA-3D</td><td class="bl">0.02</td><td>0.00</td><td>0.34</td><td class="bl">0.00</td><td>0.00</td><td>0.34</td><td class="bl">0.00</td><td>0.00</td><td>0.00</td></tr>
+              <tr><td>SceneScript</td><td class="bl">0.00</td><td>0.00</td><td>0.00</td><td class="bl">0.00</td><td>0.00</td><td>0.00</td><td class="bl">0.00</td><td>0.00</td><td>0.00</td></tr>
+              <tr><td>Map-Det3D</td><td class="bl b2">0.40</td><td class="b2">0.12</td><td>0.48</td><td class="bl">0.18</td><td class="b2">0.05</td><td>0.48</td><td class="bl">0.12</td><td>0.01</td><td>0.37</td></tr>
+              <tr class="sep"><td colspan="10">3DGS-based methods</td></tr>
+              <tr><td>M3-Spatial</td><td class="bl">0.00</td><td>0.00</td><td>0.37</td><td class="bl">0.00</td><td>0.00</td><td class="b1">0.60</td><td class="bl">0.06</td><td>0.00</td><td>0.28</td></tr>
+              <tr><td>LangSplat</td><td class="bl">0.02</td><td>0.00</td><td>0.45</td><td class="bl">0.01</td><td>0.00</td><td>0.33</td><td class="bl">0.01</td><td>0.00</td><td>0.10</td></tr>
+              <tr class="sep"><td colspan="10">Spatial pipeline frameworks</td></tr>
+              <tr><td>Boxer</td><td class="bl">0.32</td><td>0.09</td><td>0.47</td><td class="bl b2">0.23</td><td class="b2">0.05</td><td>0.46</td><td class="bl b2">0.16</td><td class="b2">0.07</td><td class="b2">0.52</td></tr>
+              <tr><td>Holi-Spatial</td><td class="bl">0.33</td><td>0.10</td><td>0.47</td><td class="bl">0.17</td><td class="b2">0.05</td><td>0.45</td><td class="bl">0.07</td><td>0.01</td><td>0.37</td></tr>
+              <tr class="ours"><td>Holi-World (Ours)</td><td class="bl b1">0.68</td><td class="b1">0.55</td><td class="b1">0.72</td><td class="bl b1">0.30</td><td class="b1">0.13</td><td class="b2">0.56</td><td class="bl b1">0.24</td><td class="b1">0.12</td><td class="b1">0.53</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tbl-note">[0, 1] scale. AP at 3D IoU 0.25 / 0.50; mIoU over pairs matched at IoU 0.25. <span class="sw a"></span>best <span class="sw b"></span>second best.</p>
+      </details>
+      <figure>
+        <div class="media paper zoomable"><img src="assets/img/14_static_qualitative.jpg" alt="Qualitative static 3D detection comparison of Boxer, Holi-Spatial, Holi-World and ground truth on ScanNet, ScanNet++ and self-collected scenes." loading="lazy" width="1600" height="639"></div>
+      </figure>
+    </div>
+
+    <!-- Dynamic -->
+    <div class="panel" role="tabpanel" id="p-dynamic" aria-labelledby="t-dynamic">
+      <div class="headline">
+        <p>Baselines get ground-truth help at test time. <span class="acc">Foundry gets none</span>, and still leads.</p>
+        <div class="big-delta"><div class="v">+18.3</div><div class="k">HOTA pts on ADT20</div></div>
+      </div>
+      <div class="bars" data-bars>
+        <div class="bcard"><div class="bk"><span>ADT20 · HOTA</span><span class="bd">+18.31</span></div>
+          <div class="brow ours" data-tip="Holi-World · ADT20 HOTA · 54.31%"><span class="bn">Holi-World</span><span class="bt"><i style="--w:54.31%"></i></span><span class="bv">54.31</span></div>
+          <div class="brow" data-tip="IT3DEgo (GT mask init) · ADT20 HOTA · 36.00%"><span class="bn">IT3DEgo*</span><span class="bt"><i style="--w:36%"></i></span><span class="bv">36.00</span></div>
+          <div class="bscale"><span></span><span><b>0</b><b>100%</b></span><span></span></div></div>
+        <div class="bcard"><div class="bk"><span>ADT20 · AssA</span><span class="bd">+18.34</span></div>
+          <div class="brow ours" data-tip="Holi-World · ADT20 AssA · 71.94%"><span class="bn">Holi-World</span><span class="bt"><i style="--w:71.94%"></i></span><span class="bv">71.94</span></div>
+          <div class="brow" data-tip="IT3DEgo (GT mask init) · ADT20 AssA · 53.60%"><span class="bn">IT3DEgo*</span><span class="bt"><i style="--w:53.6%"></i></span><span class="bv">53.60</span></div>
+          <div class="bscale"><span></span><span><b>0</b><b>100%</b></span><span></span></div></div>
+        <div class="bcard"><div class="bk"><span>Bench · HOTA</span><span class="bd">+28.01</span></div>
+          <div class="brow ours" data-tip="Holi-World · Holi-World-Bench HOTA · 43.14%"><span class="bn">Holi-World</span><span class="bt"><i style="--w:43.14%"></i></span><span class="bv">43.14</span></div>
+          <div class="brow" data-tip="SAM+LMK (GT mask init) · Holi-World-Bench HOTA · 15.13%"><span class="bn">SAM+LMK*</span><span class="bt"><i style="--w:15.13%"></i></span><span class="bv">15.13</span></div>
+          <div class="bscale"><span></span><span><b>0</b><b>100%</b></span><span></span></div></div>
+        <div class="bcard"><div class="bk"><span>Bench · PCL</span><span class="bd">+21.05</span></div>
+          <div class="brow ours" data-tip="Holi-World · Holi-World-Bench PCL · 57.89%"><span class="bn">Holi-World</span><span class="bt"><i style="--w:57.89%"></i></span><span class="bv">57.89</span></div>
+          <div class="brow" data-tip="EgoSeg3D (GT category queries) · Holi-World-Bench PCL · 36.84%"><span class="bn">EgoSeg3D†</span><span class="bt"><i style="--w:36.84%"></i></span><span class="bv">36.84</span></div>
+          <div class="bscale"><span></span><span><b>0</b><b>100%</b></span><span></span></div></div>
+      </div>
+      <details class="full">
+        <summary>Full table · 5 methods × 12 metrics</summary>
+        <div class="tbl-wrap">
+          <table class="res">
+            <thead>
+              <tr><th></th><th colspan="6" class="bl">ADT20</th><th colspan="6" class="bl">Holi-World-Bench</th></tr>
+              <tr class="grp"><th></th><th colspan="3" class="bl">Bounding box</th><th colspan="3">Trajectory</th><th colspan="3" class="bl">Bounding box</th><th colspan="3">Trajectory</th></tr>
+              <tr class="grp"><th>Method</th><th class="bl">IoU↑</th><th>GTC↑</th><th>PP↑</th><th>HOTA↑</th><th>AssA↑</th><th>PCL↑</th><th class="bl">IoU↑</th><th>GTC↑</th><th>PP↑</th><th>HOTA↑</th><th>AssA↑</th><th>PCL↑</th></tr>
+            </thead>
+            <tbody>
+              <tr class="sep"><td colspan="13">Instance segmentation and tracking</td></tr>
+              <tr><td>EgoSeg3D<sup>†</sup></td><td class="bl">–</td><td>–</td><td>–</td><td>21.89</td><td>37.11</td><td class="b2">36.47</td><td class="bl">–</td><td>–</td><td>–</td><td>5.76</td><td class="b2">21.78</td><td class="b2">36.84</td></tr>
+              <tr><td>IT3DEgo<sup>*</sup></td><td class="bl">–</td><td>–</td><td>–</td><td class="b2">36.00</td><td class="b2">53.60</td><td>34.64</td><td class="bl">–</td><td>–</td><td>–</td><td>2.44</td><td>4.36</td><td>7.89</td></tr>
+              <tr><td>SAM+Whareformer<sup>*</sup></td><td class="bl">–</td><td>–</td><td>–</td><td>30.76</td><td>40.99</td><td>31.26</td><td class="bl">–</td><td>–</td><td>–</td><td>14.63</td><td>20.97</td><td class="b2">36.84</td></tr>
+              <tr class="sep"><td colspan="13">3D object perception and tracking</td></tr>
+              <tr><td>SAM+LMK<sup>*</sup></td><td class="bl b2">7.96</td><td class="b2">21.27</td><td class="b2">14.53</td><td>26.10</td><td>30.76</td><td>21.45</td><td class="bl b2">20.28</td><td class="b2">50.84</td><td class="b2">21.30</td><td class="b2">15.13</td><td>14.35</td><td>23.68</td></tr>
+              <tr class="ours"><td>Holi-World (Ours)</td><td class="bl b1">30.88</td><td class="b1">43.03</td><td class="b1">56.25</td><td class="b1">54.31</td><td class="b1">71.94</td><td class="b1">47.95</td><td class="bl b1">41.79</td><td class="b1">53.18</td><td class="b1">76.49</td><td class="b1">43.14</td><td class="b1">56.54</td><td class="b1">57.89</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tbl-note">% at a 0.1 m trajectory tolerance. <sup>*</sup>GT first-visible mask initialization; <sup>†</sup>GT category queries. <span class="sw a"></span>best <span class="sw b"></span>second best.</p>
+      </details>
+      <figure>
+        <div class="media paper zoomable"><img src="assets/img/16_dynamic_qualitative.jpg" alt="Qualitative dynamic tracking comparison of IT3DEgo, Whareformer and Holi-World in three scenes." loading="lazy" width="1600" height="781"></div>
+      </figure>
+    </div>
+
+    <!-- Reasoning -->
+    <div class="panel" role="tabpanel" id="p-reason" aria-labelledby="t-reason">
+      <div class="headline">
+        <p>Trained only on Holi-World-Data, <span class="acc">a 4B model beats a zero-shot 27B</span> on every metric.</p>
+        <div class="big-delta"><div class="v">16→78</div><div class="k">Token F1 (%) · Bench</div></div>
+      </div>
+      <div class="bars" data-bars>
+        <div class="bcard"><div class="bk"><span>Bench · Token F1</span><span class="bd">+61.67</span></div>
+          <div class="brow ours" data-tip="Holi-World-VL-4B · Bench Token F1 · 78.02%"><span class="bn">VL-4B (ours)</span><span class="bt"><i style="--w:78.02%"></i></span><span class="bv">78.02</span></div>
+          <div class="brow" data-tip="Qwen3.8-27B zero-shot · Bench Token F1 · 43.67%"><span class="bn">Qwen 27B</span><span class="bt"><i style="--w:43.67%"></i></span><span class="bv">43.67</span></div>
+          <div class="brow b2" data-tip="Qwen3.5-4B base · Bench Token F1 · 16.35%"><span class="bn">Qwen 4B</span><span class="bt"><i style="--w:16.35%"></i></span><span class="bv">16.35</span></div>
+          <div class="bscale"><span></span><span><b>0</b><b>100%</b></span><span></span></div></div>
+        <div class="bcard"><div class="bk"><span>EgoDynamic4D · Token F1</span><span class="bd">+48.10</span></div>
+          <div class="brow ours" data-tip="Holi-World-VL-4B · EgoDynamic4D Token F1 · 66.39%"><span class="bn">VL-4B (ours)</span><span class="bt"><i style="--w:66.39%"></i></span><span class="bv">66.39</span></div>
+          <div class="brow" data-tip="Qwen3.8-27B zero-shot · EgoDynamic4D Token F1 · 42.93%"><span class="bn">Qwen 27B</span><span class="bt"><i style="--w:42.93%"></i></span><span class="bv">42.93</span></div>
+          <div class="brow b2" data-tip="Qwen3.5-4B base · EgoDynamic4D Token F1 · 18.29%"><span class="bn">Qwen 4B</span><span class="bt"><i style="--w:18.29%"></i></span><span class="bv">18.29</span></div>
+          <div class="bscale"><span></span><span><b>0</b><b>100%</b></span><span></span></div></div>
+        <div class="bcard"><div class="bk"><span>Bench · Numerical</span><span class="bd">+71.04</span></div>
+          <div class="brow ours" data-tip="Holi-World-VL-4B · Bench numerical accuracy · 81.84%"><span class="bn">VL-4B (ours)</span><span class="bt"><i style="--w:81.84%"></i></span><span class="bv">81.84</span></div>
+          <div class="brow" data-tip="Qwen3.8-27B zero-shot · Bench numerical accuracy · 66.13%"><span class="bn">Qwen 27B</span><span class="bt"><i style="--w:66.13%"></i></span><span class="bv">66.13</span></div>
+          <div class="brow b2" data-tip="Qwen3.5-4B base · Bench numerical accuracy · 10.80%"><span class="bn">Qwen 4B</span><span class="bt"><i style="--w:10.8%"></i></span><span class="bv">10.80</span></div>
+          <div class="bscale"><span></span><span><b>0</b><b>100%</b></span><span></span></div></div>
+        <div class="bcard"><div class="bk"><span>EgoDynamic4D · Yes/No</span><span class="bd">+40.20</span></div>
+          <div class="brow ours" data-tip="Holi-World-VL-4B · EgoDynamic4D yes/no accuracy · 99.67%"><span class="bn">VL-4B (ours)</span><span class="bt"><i style="--w:99.67%"></i></span><span class="bv">99.67</span></div>
+          <div class="brow" data-tip="Qwen3.8-27B zero-shot · EgoDynamic4D yes/no accuracy · 61.07%"><span class="bn">Qwen 27B</span><span class="bt"><i style="--w:61.07%"></i></span><span class="bv">61.07</span></div>
+          <div class="brow b2" data-tip="Qwen3.5-4B base · EgoDynamic4D yes/no accuracy · 59.47%"><span class="bn">Qwen 4B</span><span class="bt"><i style="--w:59.47%"></i></span><span class="bv">59.47</span></div>
+          <div class="bscale"><span></span><span><b>0</b><b>100%</b></span><span></span></div></div>
+      </div>
+      <details class="full">
+        <summary>Full table · 3 models × 8 metrics</summary>
+        <div class="tbl-wrap">
+          <table class="res" style="min-width:680px">
+            <thead>
+              <tr><th></th><th colspan="4" class="bl">Holi-World-Bench</th><th colspan="4" class="bl">EgoDynamic4D</th></tr>
+              <tr class="grp"><th>Model</th><th class="bl">F1↑</th><th>Y/N↑</th><th>MCQ↑</th><th>Num.↑</th><th class="bl">F1↑</th><th>Y/N↑</th><th>MCQ↑</th><th>Num.↑</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Qwen3.5-4B</td><td class="bl">16.35</td><td>34.86</td><td>62.00</td><td>10.80</td><td class="bl">18.29</td><td>59.47</td><td class="b2">79.16</td><td>0.02</td></tr>
+              <tr><td>Qwen3.8-27B</td><td class="bl b2">43.67</td><td class="b2">82.85</td><td class="b2">75.00</td><td class="b2">66.13</td><td class="bl b2">42.93</td><td class="b2">61.07</td><td>57.54</td><td class="b2">0.16</td></tr>
+              <tr class="ours"><td>Holi-World-VL-4B</td><td class="bl b1">78.02</td><td class="b1">93.52</td><td class="b1">94.00</td><td class="b1">81.84</td><td class="bl b1">66.39</td><td class="b1">99.67</td><td class="b1">94.92</td><td class="b1">16.33</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tbl-note">%. F1 is Token F1; Y/N, MCQ and Num. are yes/no, multiple-choice and numerical accuracy. <span class="sw a"></span>best <span class="sw b"></span>second best.</p>
+      </details>
+    </div>
+
+    <!-- Ablation -->
+    <div class="two-col" style="align-items:start; margin-top:96px">
+      <div class="fi">
+        <p class="kicker">Ablations</p>
+        <h3 class="row-title">Each part covers another's blind spot</h3>
+        <div class="seq" style="margin-top:22px"><span class="done">image lift → small objects</span><span class="done">point cloud → large extents</span><span class="done">VLM → right labels</span><span class="done">label continuity → stable IDs</span><span class="done">SAM masks → smooth tracks</span></div>
+      </div>
+      <figure class="fi">
+        <div class="media paper zoomable"><img src="assets/img/18_ablation.jpg" alt="Qualitative ablation results for static and dynamic components." loading="lazy" width="1600" height="1700"></div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CITATION ============ -->
+<section class="blk alt" id="citation">
+  <div class="wrap">
+    <p class="kicker fi">Citation</p>
+    <h2 class="title fi">BibTeX</h2>
+    <div class="cite fi">
+      <button class="copy" type="button">Copy</button>
+<pre id="bibtex"><span class="k">@article</span>{holiworld2026,
+  title   = {Holi-World: Building Holistic World Intelligence from Human-Ego Experience},
+  author  = {Li, Hao and Zheng, Xiyuan and Gao, Yuanyuan and Dai, Yalun and Ji, Xinhao and
+             Chen, Xuan-Li and Zhao, Jing and Hong, Fangzhou and Chen, Zhaoxi and Liu, Ziwei},
+  journal = {Ropedia Technical Report},
+  year    = {2026}
+}</pre>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="f-mark" aria-hidden="true"></div>
+    <div class="f-bottom"><span>© 2026 Ropedia. All rights reserved.</span></div>
+  </div>
+</footer>
+
+<div class="lb" id="lightbox" role="dialog" aria-modal="true" aria-label="Figure preview"><img alt=""></div>
+<div class="tip" id="tip" role="tooltip"></div>
+
+<script>
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const HAS_IO = 'IntersectionObserver' in window;
+/* Run cb(entry) when el enters/leaves view. */
+function watch(el, cb, opts) {
+  if (!HAS_IO) { cb({ isIntersecting: true, target: el }); return; }
+  new IntersectionObserver(es => es.forEach(cb), opts || { threshold: 0.2 }).observe(el);
+}
+
+/* ---------- Hero: dotted 4D scene (static boxes, camera path, moving object A→B) ---------- */
+(() => {
+  const cvs = document.getElementById('hero-canvas');
+  const ctx = cvs.getContext('2d');
+  const G = [204, 255, 160], BL = [122, 196, 216];
+  let W = 0, H = 0, running = true;
+
+  const pts = [];
+  const add = (x, y, z, kind) => pts.push({ x, y, z, kind });
+  for (let i = -13; i <= 13; i++) for (let j = -10; j <= 10; j++) add(i * 0.4, 0, j * 0.4, 0);
+  for (let i = -13; i <= 13; i++) for (let h = 1; h <= 7; h++) add(i * 0.4, h * 0.4, -4.2, 3);
+  for (let j = -10; j <= 10; j++) for (let h = 1; h <= 7; h++) add(-5.4, h * 0.4, j * 0.4, 3);
+  // Static 3D boxes: [cx, cz, w, h, d]
+  const boxes = [[-3.6, -2.9, 2.2, 0.85, 1.0], [2.9, -3.2, 1.3, 2.0, 0.7], [-4.1, 1.8, 1.2, 0.55, 1.6], [3.4, 1.9, 1.9, 0.75, 1.1], [0.0, -3.3, 1.8, 0.95, 0.7], [-0.8, 2.6, 2.4, 0.45, 1.2]];
+  const edges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+  boxes.forEach(([cx, cz, w, h, d]) => {
+    const v = [];
+    for (const y of [0, h]) for (const [sx, sz] of [[-1,-1],[1,-1],[1,1],[-1,1]]) v.push([cx + sx * w / 2, y, cz + sz * d / 2]);
+    edges.forEach(([a, b]) => {
+      const n = Math.max(6, Math.round(Math.hypot(v[a][0]-v[b][0], v[a][1]-v[b][1], v[a][2]-v[b][2]) / 0.09));
+      for (let k = 0; k <= n; k++) { const t = k / n; add(v[a][0] + (v[b][0]-v[a][0]) * t, v[a][1] + (v[b][1]-v[a][1]) * t, v[a][2] + (v[b][2]-v[a][2]) * t, 1); }
+    });
+  });
+  const cam = u => [-4.2 + 8.4 * u, 1.65, 0.6 + 1.1 * Math.sin(u * Math.PI * 1.4)];
+  const A = [-3.6, 0.85, -2.9], B = [3.4, 0.75, 1.9];
+  const obj = u => { const e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; return [A[0] + (B[0]-A[0]) * e, A[1] + (B[1]-A[1]) * e + Math.sin(e * Math.PI) * 1.1 + 0.18, A[2] + (B[2]-A[2]) * e]; };
+
+  function resize() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    W = cvs.clientWidth; H = cvs.clientHeight;
+    cvs.width = W * dpr; cvs.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  let rot = 0; const tilt = 0.5;
+  function proj(x, y, z) {
+    const cr = Math.cos(rot), sr = Math.sin(rot), ct = Math.cos(tilt), st = Math.sin(tilt);
+    const x1 = x * cr - z * sr, z1 = x * sr + z * cr;
+    const y2 = y * ct - z1 * st, z2 = y * st + z1 * ct;
+    const D = 13, f = Math.min(W, H * 1.5) * 0.86, s = f / (D - z2);
+    return [W * (W < 700 ? 0.5 : 0.58) + x1 * s, H * 0.6 - (y2 - 0.6) * s, s, z2];
+  }
+  const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+
+  function frame(ms) {
+    const t = REDUCE ? 4200 : ms;
+    rot = -0.62 + Math.sin(t * 0.00011) * 0.28;
+    ctx.clearRect(0, 0, W, H);
+    for (const p of pts) {
+      const [sx, sy, , z] = proj(p.x, p.y, p.z);
+      const depth = Math.max(0, Math.min(1, (z + 6) / 12));
+      if (p.kind === 0) { ctx.fillStyle = rgba([150, 160, 150], 0.08 + depth * 0.22); ctx.fillRect(sx, sy, 1.3, 1.3); }
+      else if (p.kind === 3) { ctx.fillStyle = rgba([150, 160, 150], 0.04 + depth * 0.1); ctx.fillRect(sx, sy, 1.2, 1.2); }
+      else { ctx.fillStyle = rgba(G, 0.25 + depth * 0.5); ctx.fillRect(sx - 0.8, sy - 0.8, 1.9, 1.9); }
+    }
+    const period = 10000, u = REDUCE ? 0.72 : (t % period) / period;
+    const prog = Math.min(1, u / 0.82);
+    for (let k = 0; k <= 90; k++) {
+      const q = k / 90; const [x, y, z] = cam(q); const [sx, sy] = proj(x, y, z);
+      ctx.fillStyle = rgba(BL, q <= prog ? 0.75 : 0.18); ctx.fillRect(sx - 1, sy - 1, 2, 2);
+    }
+    for (let k = 0; k <= 4; k++) {
+      const q = k / 4; if (q > prog + 1e-6) continue;
+      const [x, y, z] = cam(q), [x2, , z2] = cam(Math.min(1, q + 0.02));
+      const dir = Math.atan2(z2 - z, x2 - x) + 0.9;
+      const tip = proj(x, y, z), l = 0.55, sp = 0.32;
+      const c1 = proj(x + Math.cos(dir + sp) * l, y - 0.25, z + Math.sin(dir + sp) * l);
+      const c2 = proj(x + Math.cos(dir - sp) * l, y - 0.25, z + Math.sin(dir - sp) * l);
+      ctx.strokeStyle = rgba(BL, 0.7); ctx.lineWidth = 1; ctx.beginPath();
+      ctx.moveTo(tip[0], tip[1]); ctx.lineTo(c1[0], c1[1]); ctx.lineTo(c2[0], c2[1]); ctx.closePath(); ctx.stroke();
+      ctx.font = '10px "JetBrains Mono", monospace'; ctx.fillStyle = rgba(BL, 0.8); ctx.fillText('t' + (k + 1), tip[0] + 8, tip[1] - 8);
+    }
+    const N = 70;
+    for (let k = 0; k <= N; k++) {
+      const q = k / N; if (q > prog) break;
+      const [x, y, z] = obj(q); const [sx, sy] = proj(x, y, z);
+      ctx.fillStyle = rgba(G, 0.25 + 0.75 * (q / Math.max(prog, 0.001))); ctx.fillRect(sx - 1.3, sy - 1.3, 2.6, 2.6);
+    }
+    const [ox, oy, oz] = obj(prog); const [px, py] = proj(ox, oy, oz);
+    const glow = ctx.createRadialGradient(px, py, 0, px, py, 34);
+    glow.addColorStop(0, rgba(G, 0.45)); glow.addColorStop(1, rgba(G, 0));
+    ctx.fillStyle = glow; ctx.fillRect(px - 34, py - 34, 68, 68);
+    const hs = 0.2, cv = [];
+    for (const y of [-hs, hs]) for (const [sx, sz] of [[-1,-1],[1,-1],[1,1],[-1,1]]) cv.push(proj(ox + sx * hs, oy + y, oz + sz * hs));
+    ctx.strokeStyle = rgba(G, 1); ctx.lineWidth = 1.3; ctx.beginPath();
+    edges.forEach(([a, b]) => { ctx.moveTo(cv[a][0], cv[a][1]); ctx.lineTo(cv[b][0], cv[b][1]); }); ctx.stroke();
+    ctx.font = '11px "JetBrains Mono", monospace';
+    const tag = (p3, txt, col, dx = 10, dy = -10) => { const [sx, sy] = proj(...p3); ctx.fillStyle = col; ctx.fillText(txt, sx + dx, sy + dy); };
+    tag(A, 'A', rgba(G, .95), -16, -6); tag(B, 'B', rgba(G, .95), 10, -6);
+    if (W >= 500) tag([2.9, 2.0, -3.2], 'static 3D box', rgba(G, .6), -40, -12);
+    tag(obj(Math.max(prog, .02)), '4D track · id 07', rgba(G, .9), 16, -14);
+    if (W >= 500) tag(cam(0.08), 'camera pose', rgba(BL, .7), -20, -26);
+    if (!REDUCE && running) requestAnimationFrame(frame);
+  }
+  resize();
+  addEventListener('resize', resize);
+  if (HAS_IO && !REDUCE) watch(cvs, e => { const was = running; running = e.isIntersecting; if (running && !was) requestAnimationFrame(frame); }, { threshold: 0 });
+  requestAnimationFrame(frame);
+  if (document.fonts && REDUCE) document.fonts.ready.then(() => requestAnimationFrame(frame));
+})();
+
+/* ---------- Scroll progress ---------- */
+(() => {
+  const bar = document.querySelector('.progress'); let queued = false;
+  const upd = () => { queued = false; const h = document.documentElement.scrollHeight - innerHeight; bar.style.transform = `scaleX(${h > 0 ? scrollY / h : 0})`; };
+  addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(upd); } }, { passive: true });
+  upd();
+})();
+
+/* ---------- Reveal on scroll ---------- */
+(() => {
+  const els = document.querySelectorAll('.fi');
+  if (!HAS_IO) { els.forEach(e => e.classList.add('vis')); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('vis'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+  els.forEach(e => io.observe(e));
+})();
+
+/* ---------- Count-up numbers ---------- */
+function countUp(el) {
+  const end = parseFloat(el.dataset.count), dec = +(el.dataset.dec || 0);
+  const pre = el.dataset.prefix || '', suf = el.dataset.suffix || '';
+  const fmt = v => pre + v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }) + suf;
+  if (REDUCE) { el.textContent = fmt(end); return; }
+  const t0 = performance.now(), dur = 1500;
+  const step = now => { const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3); el.textContent = fmt(end * e); if (p < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+(() => {
+  const els = document.querySelectorAll('[data-count]');
+  if (!HAS_IO || REDUCE) return;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { countUp(e.target); io.unobserve(e.target); } }), { threshold: 0.6 });
+  els.forEach(e => io.observe(e));
+})();
+
+/* ---------- Grow bars / funnel / layers when visible ---------- */
+document.querySelectorAll('[data-layers], [data-funnel]').forEach(el => watch(el, e => e.isIntersecting && el.classList.add('go'), { threshold: 0.3 }));
+function growBars(el) { el.classList.remove('go'); void el.offsetWidth; el.classList.add('go'); }
+document.querySelectorAll('[data-bars]').forEach(el => watch(el, e => { if (e.isIntersecting && !el.closest('[hidden]')) growBars(el); }, { threshold: 0.3 }));
+
+/* ---------- Step chips that light up in sequence ---------- */
+document.querySelectorAll('[data-seq]').forEach(seq => {
+  const steps = [...seq.querySelectorAll('span')]; let i = -1, timer = null;
+  const tick = () => { i = (i + 1) % (steps.length + 1); steps.forEach((s, k) => { s.classList.toggle('on', k === i); s.classList.toggle('done', k < i); }); };
+  if (REDUCE) { steps.forEach(s => s.classList.add('done')); return; }
+  watch(seq, e => { if (e.isIntersecting && !timer) { tick(); timer = setInterval(tick, 950); } else if (!e.isIntersecting && timer) { clearInterval(timer); timer = null; } }, { threshold: 0 });
+});
+
+/* ---------- Animated flow diagrams (ecosystem, Foundry) ---------- */
+(() => {
+  const NS = 'http://www.w3.org/2000/svg';
+  // Edges per layout: [from, fromSide, to, toSide, kind, label, startMs]. h = desktop grid, v = phone grid.
+  const DEF = {
+    eco: { period: 8000, travel: 950, start: ['cap'],
+      h: [['cap','r','foundry','l','flow','',200], ['cap','b','annot','l','flow','',200], ['foundry','r','data','l','flow','',1500], ['annot','r','bench','l','flow','',1500],
+          ['data','r','vl','l','flow','train',2800], ['bench','t','data','b','verify','verify annotations',4300], ['bench','r','vl','b','verify','verify learning',4300]],
+      v: [['cap','b','foundry','t','flow','',200], ['cap','b','annot','t','flow','',200], ['foundry','b','data','t','flow','',1500], ['annot','b','bench','t','flow','',1500],
+          ['data','b','vl','t','flow','train',2800], ['bench','l','data','r','verify','',4300], ['bench','b','vl','t','verify','',4300]] },
+    foundry: { period: 6400, travel: 900, start: ['in'],
+      h: [['in','r','prep','l','flow','',200], ['prep','r','sta','l','flow','static',1400], ['prep','r','dyn','l','flow','moving',1400], ['sta','r','world','l','flow','',2700], ['dyn','r','world','l','flow','',2700]],
+      v: [['in','b','prep','t','flow','',200], ['prep','b','sta','t','flow','',1400], ['prep','b','dyn','t','flow','',1400], ['sta','b','world','t','flow','',2700], ['dyn','b','world','t','flow','',2700]] }
+  };
+  const mq = matchMedia('(max-width: 760px)');
+  const anchor = (r, side, o) => {
+    const x = r.left - o.left, y = r.top - o.top;
+    return side === 'l' ? { x, y: y + r.height / 2 } : side === 'r' ? { x: x + r.width, y: y + r.height / 2 }
+         : side === 't' ? { x: x + r.width / 2, y } : { x: x + r.width / 2, y: y + r.height };
+  };
+  const horiz = s => s === 'l' || s === 'r';
+  const route = (a, sa, b, sb) => {
+    if (horiz(sa) && horiz(sb)) { const mx = (a.x + b.x) / 2; return `M${a.x},${a.y} H${mx} V${b.y} H${b.x}`; }
+    if (!horiz(sa) && !horiz(sb)) { const my = (a.y + b.y) / 2; return `M${a.x},${a.y} V${my} H${b.x} V${b.y}`; }
+    if (!horiz(sa)) return `M${a.x},${a.y} V${b.y} H${b.x}`;
+    return `M${a.x},${a.y} H${b.x} V${b.y}`;
+  };
+
+  document.querySelectorAll('[data-flow]').forEach(flow => {
+    const def = DEF[flow.dataset.flow], svg = flow.querySelector('svg.wires');
+    let anims = [], visible = false;
+    const nodes = Object.fromEntries([...flow.querySelectorAll('.node')].map(n => [n.dataset.id, n]));
+
+    function build() {
+      anims.forEach(a => a.cancel()); anims = [];
+      svg.innerHTML = ''; flow.querySelectorAll('.wire-label, .pulse').forEach(n => n.remove());
+      const o = flow.getBoundingClientRect(), P = def.period, T = def.travel;
+      const arrivals = {};
+      def.start.forEach(id => (arrivals[id] = [[0, 'flow']]));
+      (mq.matches ? def.v : def.h).forEach(([f, fs, t, ts, kind, label, d]) => {
+        const a = anchor(nodes[f].getBoundingClientRect(), fs, o), b = anchor(nodes[t].getBoundingClientRect(), ts, o);
+        const dAttr = route(a, fs, b, ts);
+        const base = document.createElementNS(NS, 'path'); base.setAttribute('d', dAttr); base.setAttribute('class', 'wire' + (kind === 'verify' ? ' verify' : ''));
+        svg.appendChild(base);
+        // Arrow head at the target
+        const len = base.getTotalLength(), end = base.getPointAtLength(len), pre = base.getPointAtLength(Math.max(0, len - 6));
+        const ang = Math.atan2(end.y - pre.y, end.x - pre.x), s = 5;
+        const head = document.createElementNS(NS, 'path');
+        head.setAttribute('d', `M${end.x - s * Math.cos(ang - .5)},${end.y - s * Math.sin(ang - .5)} L${end.x},${end.y} L${end.x - s * Math.cos(ang + .5)},${end.y - s * Math.sin(ang + .5)}`);
+        head.setAttribute('class', 'wire head' + (kind === 'verify' ? ' verify' : ''));
+        svg.appendChild(head);
+        if (label) {
+          const m = base.getPointAtLength(len / 2), lb = document.createElement('span');
+          lb.className = 'wire-label' + (kind === 'verify' ? ' verify' : ''); lb.textContent = label;
+          lb.style.left = m.x + 'px'; lb.style.top = m.y + 'px'; flow.appendChild(lb);
+        }
+        (arrivals[t] = arrivals[t] || []).push([d + T, kind]);
+        if (REDUCE) return;
+        const c = Math.min(110, Math.max(28, len * 0.6));
+        const comet = document.createElementNS(NS, 'path'); comet.setAttribute('d', dAttr); comet.setAttribute('class', 'comet' + (kind === 'verify' ? ' verify' : ''));
+        comet.style.strokeDasharray = `${c}px ${len + c}px`; comet.style.strokeDashoffset = `${c}px`;
+        svg.appendChild(comet);
+        anims.push(comet.animate([
+          { strokeDashoffset: `${c}px`, opacity: 0, offset: 0 }, { strokeDashoffset: `${c}px`, opacity: 0, offset: d / P },
+          { strokeDashoffset: `${c}px`, opacity: 1, offset: (d + 1) / P }, { strokeDashoffset: `${-len}px`, opacity: 1, offset: (d + T) / P },
+          { strokeDashoffset: `${-len}px`, opacity: 0, offset: Math.min(1, (d + T + 1) / P) }, { strokeDashoffset: `${-len}px`, opacity: 0, offset: 1 }
+        ], { duration: P, iterations: Infinity, easing: 'linear' }));
+      });
+      if (REDUCE) return;
+      // Glow each node when a comet arrives (lime for data, blue for verification).
+      Object.entries(arrivals).forEach(([id, list]) => {
+        list.forEach(([at, kind]) => {
+          const p = document.createElement('span'); p.className = 'pulse' + (kind === 'verify' ? ' verify' : ''); nodes[id].appendChild(p);
+          const k0 = at / P, k1 = Math.min(.999, (at + 160) / P), k2 = Math.min(1, (at + 1500) / P);
+          const frames = [{ opacity: 0, offset: 0 }];
+          if (k0 > 0) frames.push({ opacity: 0, offset: k0 });
+          frames.push({ opacity: 1, offset: Math.max(k1, 0.001) }, { opacity: 0, offset: k2 });
+          if (k2 < 1) frames.push({ opacity: 0, offset: 1 });
+          anims.push(p.animate(frames, { duration: P, iterations: Infinity }));
+        });
+      });
+      anims.forEach(a => visible ? a.play() : a.pause());
+    }
+    let t; const rebuild = () => { clearTimeout(t); t = setTimeout(build, 120); };
+    addEventListener('resize', rebuild); mq.addEventListener('change', rebuild);
+    if (document.fonts) document.fonts.ready.then(build); else build();
+    if ('ResizeObserver' in window) new ResizeObserver(rebuild).observe(flow);
+    watch(flow, e => { visible = e.isIntersecting; anims.forEach(a => visible ? a.play() : a.pause()); }, { threshold: 0.1 });
+  });
+})();
+
+/* ---------- QA typing demo ---------- */
+(() => {
+  const box = document.querySelector('[data-qa]'); if (!box) return;
+  const QA = [
+    { q: 'What is behind the bed?', a: 'The curtain.', ev: ['static 3D boxes', 'camera pose'] },
+    { q: 'Where is the cup placed?', a: 'On the coaster.', ev: ['dynamic 4D track', 'object states over time'] },
+    { q: 'Which object is being set down?', a: 'The yellow cup.', ev: ['interaction semantics', '2D observations'] },
+    { q: 'Where does the hand truck move?', a: 'Workspace to office corridor.', ev: ['dynamic 4D track', 'scene layout'] }
+  ];
+  const tabs = [...box.querySelectorAll('.qa-types button')];
+  const qEl = box.querySelector('.qa-q'), aRow = box.querySelector('.qa-a'), aEl = box.querySelector('.qa-ans'), ev = box.querySelector('.qa-ev');
+  let idx = 0, timers = [], pbAnim = null, active = false;
+  const clear = () => { timers.forEach(clearTimeout); timers = []; pbAnim && pbAnim.cancel(); };
+  function show(i, auto) {
+    clear(); idx = i;
+    tabs.forEach((b, k) => b.setAttribute('aria-selected', k === i));
+    const item = QA[i];
+    const fill = () => { aEl.textContent = item.a; ev.innerHTML = item.ev.map(s => `<span>grounded in: ${s}</span>`).join(''); };
+    if (REDUCE) { qEl.textContent = item.q; fill(); aRow.classList.add('show'); ev.classList.add('show'); return; }
+    // Hide the previous answer instantly, then fill in the new one while it is invisible.
+    [aRow, ev].forEach(n => { n.style.transition = 'none'; n.classList.remove('show'); });
+    void aRow.offsetWidth; aRow.style.transition = ev.style.transition = '';
+    qEl.textContent = ''; fill();
+    [...item.q].forEach((ch, k) => timers.push(setTimeout(() => (qEl.textContent += ch), 32 * k)));
+    const typed = 32 * item.q.length;
+    timers.push(setTimeout(() => aRow.classList.add('show'), typed + 350));
+    timers.push(setTimeout(() => ev.classList.add('show'), typed + 650));
+    const hold = typed + 3400;
+    if (auto !== false) {
+      pbAnim = tabs[i].querySelector('.pb').animate([{ width: '0%' }, { width: '100%' }], { duration: hold, easing: 'linear', fill: 'forwards' });
+      timers.push(setTimeout(() => active && show((i + 1) % QA.length), hold));
+    }
+  }
+  tabs.forEach((b, k) => b.addEventListener('click', () => show(k, false)));
+  watch(box, e => { if (e.isIntersecting && !active) { active = true; show(idx); } else if (!e.isIntersecting && active) { active = false; clear(); } }, { threshold: 0.4 });
+})();
+
+/* ---------- Looping clips: play only while visible ---------- */
+(() => {
+  const vids = document.querySelectorAll('video.loopvid');
+  if (REDUCE || !HAS_IO) { vids.forEach(v => v.setAttribute('controls', '')); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    const v = e.target;
+    if (e.isIntersecting) { if (v.preload === 'none') v.preload = 'auto'; v.play().catch(() => v.setAttribute('controls', '')); }
+    else v.pause();
+  }), { threshold: 0.25 });
+  vids.forEach(v => io.observe(v));
+})();
+
+/* ---------- Results tabs ---------- */
+(() => {
+  const tabs = [...document.querySelectorAll('.tabs [role="tab"]')];
+  const show = tab => {
+    tabs.forEach(t => {
+      const on = t === tab, panel = document.getElementById(t.getAttribute('aria-controls'));
+      t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; panel.hidden = !on;
+      if (on) panel.querySelectorAll('[data-bars]').forEach(growBars);
+    });
+  };
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => show(t));
+    t.addEventListener('keydown', e => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) { const n = tabs[(i + d + tabs.length) % tabs.length]; show(n); n.focus(); }
+    });
+  });
+  tabs.forEach(t => (document.getElementById(t.getAttribute('aria-controls')).hidden = t !== tabs[0]));
+})();
+
+/* ---------- Bar tooltips ---------- */
+(() => {
+  const tip = document.getElementById('tip');
+  document.querySelectorAll('.brow[data-tip]').forEach(r => {
+    r.addEventListener('pointerenter', () => { tip.textContent = r.dataset.tip; tip.classList.add('on'); });
+    r.addEventListener('pointermove', e => { tip.style.left = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8) + 'px'; tip.style.top = (e.clientY + 16) + 'px'; });
+    r.addEventListener('pointerleave', () => tip.classList.remove('on'));
+  });
+})();
+
+/* ---------- Stage media toggles ---------- */
+document.querySelectorAll('.seg').forEach(seg => {
+  const fig = seg.parentElement;
+  seg.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-selected', x === b));
+    fig.querySelectorAll('[data-pane]').forEach(p => {
+      p.hidden = p.dataset.pane !== b.dataset.show;
+      const v = p.querySelector('video'); if (v) p.hidden ? v.pause() : v.play().catch(() => {});
+    });
+  }));
+});
+
+/* ---------- Lightbox for paper figures ---------- */
+(() => {
+  const lb = document.getElementById('lightbox'), img = lb.querySelector('img');
+  const open = (src, alt) => { img.src = src; img.alt = alt || ''; lb.classList.add('open'); };
+  document.querySelectorAll('.zoomable img').forEach(i => i.addEventListener('click', () => open(i.src, i.alt)));
+  document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => open(b.dataset.open, 'Examples of the 30 QA types in Holi-World')));
+  const close = () => lb.classList.remove('open');
+  lb.addEventListener('click', close);
+  addEventListener('keydown', e => e.key === 'Escape' && close());
+})();
+
+/* ---------- Copy BibTeX ---------- */
+document.querySelector('.cite .copy').addEventListener('click', async e => {
+  const b = e.currentTarget;
+  try { await navigator.clipboard.writeText(document.getElementById('bibtex').innerText); b.textContent = 'Copied'; }
+  catch { b.textContent = 'Select & copy'; }
+  setTimeout(() => (b.textContent = 'Copy'), 1600);
+});
+
+</script>
+</body>
+</html>
