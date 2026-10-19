@@ -11,8 +11,9 @@ Hao Li<sup>1,2*</sup>, Xiyuan Zheng<sup>1,2*</sup>, Yuanyuan Gao<sup>1,3*</sup>,
 <a href="https://ropedia.github.io/holi-world/"><img src="https://img.shields.io/badge/Project_Page-online-green" alt="Project Page"></a>
 <img src="https://img.shields.io/badge/arXiv-coming_soon-b31b1b" alt="arXiv">
 <a href="assets/holiworld_video.mp4"><img src="https://img.shields.io/badge/Video-MP4-ff0000" alt="Video"></a>
-<img src="https://img.shields.io/badge/%F0%9F%A4%97%20HoliWorld--Data-coming_soon-yellow" alt="HoliWorld-Data">
-<img src="https://img.shields.io/badge/%F0%9F%A4%97%20HoliWorld--VL--4B-coming_soon-yellow" alt="HoliWorld-VL-4B">
+<a href="https://github.com/Ropedia/holi-world"><img src="https://img.shields.io/badge/Code-github.com%2FRopedia%2Fholi--world-181717?logo=github&logoColor=white" alt="Code"></a>
+<a href="https://huggingface.co/ropedia-ai/holiworld-vl"><img src="https://img.shields.io/badge/Model-ropedia--ai%2Fholiworld--vl-ffcc4d?logo=huggingface&logoColor=black" alt="Model"></a>
+<a href="https://huggingface.co/datasets/ropedia-ai/holiworld-data"><img src="https://img.shields.io/badge/Dataset-ropedia--ai%2Fholiworld--data-ffcc4d?logo=huggingface&logoColor=black" alt="Dataset"></a>
 
 </div>
 
@@ -29,8 +30,8 @@ The code will not be open-sourced. The dataset and model will be released on Hug
 
 | Resource | Status |
 | --- | --- |
-| HoliWorld-Data | 🤗 [`ropedia-ai/HoliWorld-Data`](https://huggingface.co/datasets/ropedia-ai/HoliWorld-Data) · coming soon |
-| HoliWorld-VL-4B | 🤗 [`ropedia-ai/HoliWorld-VL-4B`](https://huggingface.co/ropedia-ai/HoliWorld-VL-4B) · coming soon |
+| Model | 🤗 [huggingface.co/ropedia-ai/holiworld-vl](https://huggingface.co/ropedia-ai/holiworld-vl) · coming soon |
+| Dataset | 🤗 [huggingface.co/datasets/ropedia-ai/holiworld-data](https://huggingface.co/datasets/ropedia-ai/holiworld-data) · coming soon |
 
 ## Citation
 
