@@ -1,0 +1,54 @@
+cff-version: 1.2.0
+message: "If you use Holi-World, HoliWorld-Data or HoliWorld-VL-4B, please cite it as below."
+title: "Holi-World: Building Holistic World Intelligence from Human-Ego Experience"
+type: dataset
+url: "https://ropedia.github.io/holi-world/"
+repository: "https://github.com/Ropedia/holi-world"
+authors:
+  - family-names: Li
+    given-names: Hao
+  - family-names: Zheng
+    given-names: Xiyuan
+  - family-names: Gao
+    given-names: Yuanyuan
+  - family-names: Dai
+    given-names: Yalun
+  - family-names: Ji
+    given-names: Xinhao
+  - family-names: Chen
+    given-names: Xuan-Li
+  - family-names: Zhao
+    given-names: Jing
+  - family-names: Hong
+    given-names: Fangzhou
+  - family-names: Chen
+    given-names: Zhaoxi
+  - family-names: Liu
+    given-names: Ziwei
+preferred-citation:
+  type: report
+  title: "Holi-World: Building Holistic World Intelligence from Human-Ego Experience"
+  year: 2026
+  institution:
+    name: Ropedia
+  authors:
+    - family-names: Li
+      given-names: Hao
+    - family-names: Zheng
+      given-names: Xiyuan
+    - family-names: Gao
+      given-names: Yuanyuan
+    - family-names: Dai
+      given-names: Yalun
+    - family-names: Ji
+      given-names: Xinhao
+    - family-names: Chen
+      given-names: Xuan-Li
+    - family-names: Zhao
+      given-names: Jing
+    - family-names: Hong
+      given-names: Fangzhou
+    - family-names: Chen
+      given-names: Zhaoxi
+    - family-names: Liu
+      given-names: Ziwei
