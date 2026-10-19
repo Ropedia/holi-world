@@ -78,7 +78,7 @@ a { color: inherit; text-decoration: none; }
 /* ---------- Hero ---------- */
 .hero { position: relative; min-height: 760px; padding: 150px 0 96px; background: #000; overflow: hidden; border-bottom: 1px solid var(--b3); }
 #hero-canvas {
-  position: absolute; top: 0; right: 0; width: 62%; height: 100%;
+  position: absolute; top: 0; right: 0; width: 64%; height: 100%;
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 22%, #000 88%, transparent 100%);
           mask-image: linear-gradient(90deg, transparent 0%, #000 22%, #000 88%, transparent 100%);
 }
@@ -102,7 +102,7 @@ a { color: inherit; text-decoration: none; }
 .hero .btn-row { margin-top: 38px; }
 @media (max-width: 900px) {
   .hero { min-height: 0; padding: 120px 0 0; display: flex; flex-direction: column; }
-  #hero-canvas { position: relative; order: 2; width: 100%; height: 300px; margin-top: 8px;
+  #hero-canvas { position: relative; order: 2; width: 100%; height: 360px; margin-top: 8px;
     -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%, #000 80%, transparent); mask-image: linear-gradient(180deg, transparent, #000 18%, #000 80%, transparent); }
 }
 
@@ -843,104 +843,300 @@ function watch(el, cb, opts) {
   new IntersectionObserver(es => es.forEach(cb), opts || { threshold: 0.2 }).observe(el);
 }
 
-/* ---------- Hero: dotted 4D scene (static boxes, camera path, moving object A→B) ---------- */
+/* ---------- Hero: the pipeline as a loop (capture → detect → track → world state) ---------- */
 (() => {
   const cvs = document.getElementById('hero-canvas');
   const ctx = cvs.getContext('2d');
+  const hero = cvs.closest('.hero');
   const G = [204, 255, 160], BL = [122, 196, 216];
-  let W = 0, H = 0, running = true;
+  const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+  const LIME = 'rgb(204,255,160)', OBJC = 'rgb(176,208,156)', FLOOR = 'rgb(140,156,142)', WALL = 'rgb(128,146,140)', FLASH = 'rgb(236,255,222)';
+  const clamp01 = v => (v < 0 ? 0 : v > 1 ? 1 : v);
+  const ease = u => (u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+  let seed = 11;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const PERIOD = 17; // seconds per loop
 
+  // ---- Scene: a furnished room, sampled as a point cloud ----
+  const box = (cx, cz, w, h, d, y0 = 0) => [cx - w / 2, cx + w / 2, y0, y0 + h, cz - d / 2, cz + d / 2];
+  // bb is what Foundry detects; parts are the surfaces the scan picks up.
+  const OBJ = [
+    { name: 'desk', bb: box(-3.6, -2.9, 2.2, .75, 1.0), parts: [box(-3.6, -2.9, 2.2, .06, 1.0, .69), box(-4.67, -2.9, .06, .69, 1.0), box(-2.53, -2.9, .06, .69, 1.0)] },
+    { name: 'monitor', bb: box(-3.9, -3.22, .9, .55, .12, .75), label: false },
+    { name: 'chair', bb: box(-2.3, -1.75, .62, .95, .6), parts: [box(-2.3, -1.75, .62, .06, .6, .44), box(-2.3, -2.02, .62, .5, .06, .45)], legs: .44 },
+    { name: 'shelf', bb: box(2.9, -3.6, 1.4, 2.1, .5), parts: [box(2.23, -3.6, .06, 2.1, .5), box(3.57, -3.6, .06, 2.1, .5), box(2.9, -3.6, 1.4, .05, .5, .02), box(2.9, -3.6, 1.4, .05, .5, .7), box(2.9, -3.6, 1.4, .05, .5, 1.38), box(2.9, -3.6, 1.4, .05, .5, 2.05)] },
+    { name: 'sofa', bb: box(-4.0, 1.9, 1.4, .85, 2.3), parts: [box(-3.85, 1.9, 1.1, .45, 2.3), box(-4.55, 1.9, .3, .85, 2.3)] },
+    { name: 'table', bb: box(-1.5, 1.6, 1.4, .45, .8), parts: [box(-1.5, 1.6, 1.4, .05, .8, .4)], legs: .4 },
+    { name: 'cabinet', bb: box(3.4, 1.9, 1.7, .8, 1.0) },
+  ];
   const pts = [];
-  const add = (x, y, z, kind) => pts.push({ x, y, z, kind });
-  for (let i = -13; i <= 13; i++) for (let j = -10; j <= 10; j++) add(i * 0.4, 0, j * 0.4, 0);
-  for (let i = -13; i <= 13; i++) for (let h = 1; h <= 7; h++) add(i * 0.4, h * 0.4, -4.2, 3);
-  for (let j = -10; j <= 10; j++) for (let h = 1; h <= 7; h++) add(-5.4, h * 0.4, j * 0.4, 3);
-  // Static 3D boxes: [cx, cz, w, h, d]
-  const boxes = [[-3.6, -2.9, 2.2, 0.85, 1.0], [2.9, -3.2, 1.3, 2.0, 0.7], [-4.1, 1.8, 1.2, 0.55, 1.6], [3.4, 1.9, 1.9, 0.75, 1.1], [0.0, -3.3, 1.8, 0.95, 0.7], [-0.8, 2.6, 2.4, 0.45, 1.2]];
-  const edges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
-  boxes.forEach(([cx, cz, w, h, d]) => {
-    const v = [];
-    for (const y of [0, h]) for (const [sx, sz] of [[-1,-1],[1,-1],[1,1],[-1,1]]) v.push([cx + sx * w / 2, y, cz + sz * d / 2]);
-    edges.forEach(([a, b]) => {
-      const n = Math.max(6, Math.round(Math.hypot(v[a][0]-v[b][0], v[a][1]-v[b][1], v[a][2]-v[b][2]) / 0.09));
-      for (let k = 0; k <= n; k++) { const t = k / n; add(v[a][0] + (v[b][0]-v[a][0]) * t, v[a][1] + (v[b][1]-v[a][1]) * t, v[a][2] + (v[b][2]-v[a][2]) * t, 1); }
-    });
+  const add = (x, y, z, k, o = -1) => pts.push({ x, y, z, k, o, tr: 0 });
+  function surf(b, o, dens) {
+    const [x0, x1, y0, y1, z0, z1] = b;
+    const faces = [
+      [x1 - x0, z1 - z0, (u, v) => [x0 + u * (x1 - x0), y1, z0 + v * (z1 - z0)]],
+      [x1 - x0, y1 - y0, (u, v) => [x0 + u * (x1 - x0), y0 + v * (y1 - y0), z1]],
+      [x1 - x0, y1 - y0, (u, v) => [x0 + u * (x1 - x0), y0 + v * (y1 - y0), z0]],
+      [z1 - z0, y1 - y0, (u, v) => [x0, y0 + v * (y1 - y0), z0 + u * (z1 - z0)]],
+      [z1 - z0, y1 - y0, (u, v) => [x1, y0 + v * (y1 - y0), z0 + u * (z1 - z0)]],
+    ];
+    faces.forEach(([a, c, f]) => { const n = Math.max(5, Math.round(a * c * dens)); for (let i = 0; i < n; i++) { const [x, y, z] = f(rnd(), rnd()); add(x, y, z, 2, o); } });
+  }
+  OBJ.forEach((ob, i) => {
+    (ob.parts || [ob.bb]).forEach(b => surf(b, i, 46));
+    if (ob.legs) {
+      const [x0, x1, , , z0, z1] = ob.bb;
+      [[x0 + .05, z0 + .05], [x1 - .05, z0 + .05], [x1 - .05, z1 - .05], [x0 + .05, z1 - .05]].forEach(([x, z]) => { for (let y = 0; y < ob.legs; y += .05) add(x, y, z, 2, i); });
+    }
   });
-  const cam = u => [-4.2 + 8.4 * u, 1.65, 0.6 + 1.1 * Math.sin(u * Math.PI * 1.4)];
-  const A = [-3.6, 0.85, -2.9], B = [3.4, 0.75, 1.9];
-  const obj = u => { const e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; return [A[0] + (B[0]-A[0]) * e, A[1] + (B[1]-A[1]) * e + Math.sin(e * Math.PI) * 1.1 + 0.18, A[2] + (B[2]-A[2]) * e]; };
+  const j = () => (rnd() - .5) * .08;
+  for (let x = -5.4; x <= 5.41; x += .16) for (let z = -4.2; z <= 4.21; z += .16) add(x + j(), 0, z + j(), 0);
+  const inWindow = (x, y) => x > -1.6 && x < 0 && y > 1.0 && y < 2.2;
+  for (let x = -5.4; x <= 5.41; x += .2) for (let y = .1; y <= 2.9; y += .2) if (!inWindow(x, y)) add(x + j() / 2, y + j() / 2, -4.2, 1);
+  for (let x = -1.6; x <= 0; x += .1) { add(x, 1.0, -4.2, 1); add(x, 2.2, -4.2, 1); }
+  for (let y = 1.0; y <= 2.2; y += .1) { add(-1.6, y, -4.2, 1); add(0, y, -4.2, 1); }
+  for (let z = -4.2; z <= 4.21; z += .2) for (let y = .1; y <= 2.9; y += .2) add(-5.4, y + j() / 2, z + j() / 2, 1);
+  // Reveal order follows the wearer walking left to right.
+  pts.forEach(p => (p.tr = clamp01((p.x + 5.6) / 11.2) * .8 + rnd() * .12 + (p.k === 1 ? .04 : 0)));
+  pts.sort((a, b) => a.tr - b.tr);
+  const N = pts.length, SX = new Float32Array(N), SY = new Float32Array(N);
+  const firstAtLeast = v => { let lo = 0, hi = N; while (lo < hi) { const m = (lo + hi) >> 1; if (pts[m].tr < v) lo = m + 1; else hi = m; } return lo; };
 
+  const cam = u => [-4.3 + 8.4 * u, 1.6, .3 - .9 * Math.sin(u * Math.PI * 1.2)];
+  const A = [-3.05, .75, -2.62], B = [3.1, .8, 1.75], CUP = .13;
+  const cup = u => [A[0] + (B[0] - A[0]) * u, A[1] + (B[1] - A[1]) * u + Math.sin(u * Math.PI) * 1.25 + CUP, A[2] + (B[2] - A[2]) * u];
+  const EDGES = [[0, 1], [1, 2], [2, 3], [3, 0], [0, 4], [1, 5], [2, 6], [3, 7], [4, 5], [5, 6], [6, 7], [7, 4]];
+  const corners = b => { const v = []; for (const y of [b[2], b[3]]) for (const [x, z] of [[b[0], b[4]], [b[1], b[4]], [b[1], b[5]], [b[0], b[5]]]) v.push([x, y, z]); return v; };
+
+  // ---- Camera / projection ----
+  let W = 0, H = 0, inFlow = false, running = true;
+  let rot = 0, tilt = .5, cr = 1, sr = 0, ct = 1, st = 0, F = 1, CX = 0, CY = 0;
+  let tx = 0, ty = 0, px = 0, py = 0;
+  let PX = 0, PY = 0, PZ = 0;
+  function proj(x, y, z) {
+    const x1 = x * cr - z * sr, z1 = x * sr + z * cr;
+    const y2 = y * ct - z1 * st, z2 = y * st + z1 * ct;
+    const s = F / (13 - z2);
+    PX = CX + x1 * s; PY = CY - (y2 - .6) * s; PZ = z2;
+  }
+  const P = (x, y, z) => { proj(x, y, z); return [PX, PY, PZ]; };
   function resize() {
     const dpr = Math.min(devicePixelRatio || 1, 2);
     W = cvs.clientWidth; H = cvs.clientHeight;
     cvs.width = W * dpr; cvs.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    inFlow = getComputedStyle(cvs).position !== 'absolute';
   }
-  let rot = 0; const tilt = 0.5;
-  function proj(x, y, z) {
-    const cr = Math.cos(rot), sr = Math.sin(rot), ct = Math.cos(tilt), st = Math.sin(tilt);
-    const x1 = x * cr - z * sr, z1 = x * sr + z * cr;
-    const y2 = y * ct - z1 * st, z2 = y * st + z1 * ct;
-    const D = 13, f = Math.min(W, H * 1.5) * 0.86, s = f / (D - z2);
-    return [W * (W < 700 ? 0.5 : 0.58) + x1 * s, H * 0.6 - (y2 - 0.6) * s, s, z2];
+  hero.addEventListener('pointermove', e => { const r = hero.getBoundingClientRect(); tx = (e.clientX - r.left) / r.width - .5; ty = (e.clientY - r.top) / r.height - .5; });
+  hero.addEventListener('pointerleave', () => (tx = ty = 0));
+
+  function line(a, b, alpha, width, col) { ctx.globalAlpha = alpha; ctx.strokeStyle = col; ctx.lineWidth = width; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+  function cube(c, h, alpha, glow) {
+    const v = corners([c[0] - h, c[0] + h, c[1] - h, c[1] + h, c[2] - h, c[2] + h]).map(q => P(...q));
+    if (glow) EDGES.forEach(([a, b]) => line(v[a], v[b], alpha * .25, 4, LIME));
+    EDGES.forEach(([a, b]) => line(v[a], v[b], alpha, 1.3, LIME));
   }
-  const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+  function frustum(pos, size, alpha, col) {
+    const tgt = [pos[0] + 1.4, .55, -2.2], f = [tgt[0] - pos[0], tgt[1] - pos[1], tgt[2] - pos[2]];
+    const fl = Math.hypot(...f); f[0] /= fl; f[1] /= fl; f[2] /= fl;
+    const r = [-f[2], 0, f[0]], rl = Math.hypot(...r); r[0] /= rl; r[2] /= rl;
+    const u = [r[1] * f[2] - r[2] * f[1], r[2] * f[0] - r[0] * f[2], r[0] * f[1] - r[1] * f[0]];
+    const c = [pos[0] + f[0] * size, pos[1] + f[1] * size, pos[2] + f[2] * size];
+    const q = [[1, 1], [-1, 1], [-1, -1], [1, -1]].map(([a, b]) => P(c[0] + r[0] * a * size * .6 + u[0] * b * size * .38, c[1] + u[1] * b * size * .38, c[2] + r[2] * a * size * .6 + u[2] * b * size * .38));
+    const apex = P(...pos);
+    q.forEach(p => line(apex, p, alpha, 1, col));
+    for (let k = 0; k < 4; k++) line(q[k], q[(k + 1) % 4], alpha, 1, col);
+    return apex;
+  }
+  function tag(x, y, text, alpha, col = G, right = false) {
+    const op = ctx.globalCompositeOperation; ctx.globalCompositeOperation = 'source-over';
+    ctx.font = '10.5px "JetBrains Mono", monospace';
+    const w = ctx.measureText(text).width + 12;
+    if (right) x -= w;
+    ctx.globalAlpha = alpha * .85; ctx.fillStyle = 'rgb(8,10,8)'; ctx.fillRect(x, y - 16, w, 18);
+    ctx.globalAlpha = alpha; ctx.strokeStyle = rgba(col, .55); ctx.lineWidth = 1; ctx.strokeRect(x + .5, y - 15.5, w - 1, 17);
+    ctx.fillStyle = rgba(col, 1); ctx.fillText(text, x + 6, y - 3);
+    ctx.globalCompositeOperation = op;
+  }
 
   function frame(ms) {
-    const t = REDUCE ? 4200 : ms;
-    rot = -0.62 + Math.sin(t * 0.00011) * 0.28;
+    const t = REDUCE ? 15 : (ms / 1000) % PERIOD;
+    px += (tx - px) * .05; py += (ty - py) * .05;
+    rot = -.62 + (REDUCE ? 0 : Math.sin(ms * 8e-5) * .16) + px * .35;
+    tilt = .5 + py * .14;
+    cr = Math.cos(rot); sr = Math.sin(rot); ct = Math.cos(tilt); st = Math.sin(tilt);
+    F = Math.min(W, H * 1.5) * (inFlow ? .84 : .7);
+    CX = W * (inFlow ? .5 : .6); CY = H * (inFlow ? .6 : .55);
+
+    const fade = t < .6 ? t / .6 : t > 16.2 ? Math.max(0, (PERIOD - t) / .8) : 1;
+    const scanP = clamp01((t - .3) / 6);
+    const boxP = OBJ.map((o, i) => clamp01((t - 5.6 - i * .42) / .9));
+    const trackP = ease(clamp01((t - 9.8) / 4.4));
     ctx.clearRect(0, 0, W, H);
-    for (const p of pts) {
-      const [sx, sy, , z] = proj(p.x, p.y, p.z);
-      const depth = Math.max(0, Math.min(1, (z + 6) / 12));
-      if (p.kind === 0) { ctx.fillStyle = rgba([150, 160, 150], 0.08 + depth * 0.22); ctx.fillRect(sx, sy, 1.3, 1.3); }
-      else if (p.kind === 3) { ctx.fillStyle = rgba([150, 160, 150], 0.04 + depth * 0.1); ctx.fillRect(sx, sy, 1.2, 1.2); }
-      else { ctx.fillStyle = rgba(G, 0.25 + depth * 0.5); ctx.fillRect(sx - 0.8, sy - 0.8, 1.9, 1.9); }
+    ctx.globalCompositeOperation = 'source-over';
+
+    // Ambient glow under the room
+    const glow = ctx.createRadialGradient(CX, CY, 0, CX, CY, Math.max(W, H) * .55);
+    glow.addColorStop(0, rgba(G, .07 * fade)); glow.addColorStop(1, rgba(G, 0));
+    ctx.globalAlpha = 1; ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+
+    // Point cloud, revealed by the scan
+    let shown = 0;
+    for (let i = 0; i < N; i++) {
+      const p = pts[i];
+      if (p.tr > scanP) break;
+      shown++;
+      proj(p.x, p.y, p.z); SX[i] = PX; SY[i] = PY;
+      const d = clamp01((PZ + 6) / 12);
+      let a;
+      if (p.k === 0) { a = .06 + d * .2; ctx.fillStyle = FLOOR; }
+      else if (p.k === 1) { a = .05 + d * .14; ctx.fillStyle = WALL; }
+      else { const lit = p.o >= 0 && boxP[p.o] >= 1; a = (lit ? .5 : .28) + d * .35; ctx.fillStyle = lit ? LIME : OBJC; }
+      ctx.globalAlpha = a * fade;
+      const s = 1 + d * .95;
+      ctx.fillRect(PX - s / 2, PY - s / 2, s, s);
     }
-    const period = 10000, u = REDUCE ? 0.72 : (t % period) / period;
-    const prog = Math.min(1, u / 0.82);
-    for (let k = 0; k <= 90; k++) {
-      const q = k / 90; const [x, y, z] = cam(q); const [sx, sy] = proj(x, y, z);
-      ctx.fillStyle = rgba(BL, q <= prog ? 0.75 : 0.18); ctx.fillRect(sx - 1, sy - 1, 2, 2);
+
+    ctx.globalCompositeOperation = 'lighter';
+    // Fresh points flash as the scan reaches them
+    if (scanP > 0 && scanP < 1) {
+      ctx.fillStyle = FLASH;
+      for (let i = firstAtLeast(scanP - .04); i < shown; i++) {
+        const k = 1 - (scanP - pts[i].tr) / .04;
+        ctx.globalAlpha = k * .85 * fade; ctx.fillRect(SX[i] - 1.3, SY[i] - 1.3, 2.6, 2.6);
+      }
+      // Scan plane
+      const xs = Math.max(-5.4, Math.min(5.4, (scanP - .06) / .8 * 11.2 - 5.6));
+      const q = [P(xs, 0, -4.2), P(xs, 2.9, -4.2), P(xs, 2.9, 4.2), P(xs, 0, 4.2)];
+      const edgeFade = Math.min(1, scanP * 8, (1 - scanP) * 8) * fade;
+      ctx.globalAlpha = .07 * edgeFade; ctx.fillStyle = LIME;
+      ctx.beginPath(); ctx.moveTo(q[0][0], q[0][1]); q.slice(1).forEach(p => ctx.lineTo(p[0], p[1])); ctx.closePath(); ctx.fill();
+      line(q[0], q[3], .9 * edgeFade, 1.6, LIME); line(q[0], q[1], .35 * edgeFade, 1, LIME); line(q[2], q[3], .35 * edgeFade, 1, LIME); line(q[1], q[2], .25 * edgeFade, 1, LIME);
     }
+
+    // Wearer path, pose history and the live camera with depth rays
+    const camCol = rgba(BL, 1);
+    const pathEnd = Math.min(scanP, 1);
+    ctx.fillStyle = camCol;
+    for (let k = 0; k <= 120; k++) {
+      const u = k / 120; if (u > pathEnd) break;
+      proj(...cam(u)); ctx.globalAlpha = (scanP < 1 ? .25 + .6 * (u / Math.max(pathEnd, .01)) : .45) * fade; ctx.fillRect(PX - 1, PY - 1, 2, 2);
+    }
+    ctx.font = '10px "JetBrains Mono", monospace';
+    const poses = [];
     for (let k = 0; k <= 4; k++) {
-      const q = k / 4; if (q > prog + 1e-6) continue;
-      const [x, y, z] = cam(q), [x2, , z2] = cam(Math.min(1, q + 0.02));
-      const dir = Math.atan2(z2 - z, x2 - x) + 0.9;
-      const tip = proj(x, y, z), l = 0.55, sp = 0.32;
-      const c1 = proj(x + Math.cos(dir + sp) * l, y - 0.25, z + Math.sin(dir + sp) * l);
-      const c2 = proj(x + Math.cos(dir - sp) * l, y - 0.25, z + Math.sin(dir - sp) * l);
-      ctx.strokeStyle = rgba(BL, 0.7); ctx.lineWidth = 1; ctx.beginPath();
-      ctx.moveTo(tip[0], tip[1]); ctx.lineTo(c1[0], c1[1]); ctx.lineTo(c2[0], c2[1]); ctx.closePath(); ctx.stroke();
-      ctx.font = '10px "JetBrains Mono", monospace'; ctx.fillStyle = rgba(BL, 0.8); ctx.fillText('t' + (k + 1), tip[0] + 8, tip[1] - 8);
+      const u = k / 4; if (u > scanP + 1e-6) continue;
+      const apex = frustum(cam(u), .3, .55 * fade, camCol); poses.push(apex);
+      ctx.globalAlpha = .75 * fade; ctx.fillStyle = camCol; ctx.fillText('t' + (k + 1), apex[0] + 7, apex[1] - 9);
     }
-    const N = 70;
-    for (let k = 0; k <= N; k++) {
-      const q = k / N; if (q > prog) break;
-      const [x, y, z] = obj(q); const [sx, sy] = proj(x, y, z);
-      ctx.fillStyle = rgba(G, 0.25 + 0.75 * (q / Math.max(prog, 0.001))); ctx.fillRect(sx - 1.3, sy - 1.3, 2.6, 2.6);
+    if (scanP > 0 && scanP < 1) {
+      const pos = cam(scanP), apex = frustum(pos, .48, fade, camCol);
+      const lo = firstAtLeast(scanP - .025);
+      if (shown > lo) for (let r = 0; r < 16; r++) {
+        const i = lo + Math.floor(Math.random() * (shown - lo));
+        line(apex, [SX[i], SY[i]], .2 * fade, 1, camCol);
+      }
+      ctx.globalAlpha = fade; ctx.fillStyle = camCol; ctx.beginPath(); ctx.arc(apex[0], apex[1], 3.2, 0, 7); ctx.fill();
     }
-    const [ox, oy, oz] = obj(prog); const [px, py] = proj(ox, oy, oz);
-    const glow = ctx.createRadialGradient(px, py, 0, px, py, 34);
-    glow.addColorStop(0, rgba(G, 0.45)); glow.addColorStop(1, rgba(G, 0));
-    ctx.fillStyle = glow; ctx.fillRect(px - 34, py - 34, 68, 68);
-    const hs = 0.2, cv = [];
-    for (const y of [-hs, hs]) for (const [sx, sz] of [[-1,-1],[1,-1],[1,1],[-1,1]]) cv.push(proj(ox + sx * hs, oy + y, oz + sz * hs));
-    ctx.strokeStyle = rgba(G, 1); ctx.lineWidth = 1.3; ctx.beginPath();
-    edges.forEach(([a, b]) => { ctx.moveTo(cv[a][0], cv[a][1]); ctx.lineTo(cv[b][0], cv[b][1]); }); ctx.stroke();
-    ctx.font = '11px "JetBrains Mono", monospace';
-    const tag = (p3, txt, col, dx = 10, dy = -10) => { const [sx, sy] = proj(...p3); ctx.fillStyle = col; ctx.fillText(txt, sx + dx, sy + dy); };
-    tag(A, 'A', rgba(G, .95), -16, -6); tag(B, 'B', rgba(G, .95), 10, -6);
-    if (W >= 500) tag([2.9, 2.0, -3.2], 'static 3D box', rgba(G, .6), -40, -12);
-    tag(obj(Math.max(prog, .02)), '4D track · id 07', rgba(G, .9), 16, -14);
-    if (W >= 500) tag(cam(0.08), 'camera pose', rgba(BL, .7), -20, -26);
+
+    // 3D boxes trace onto each object, then get a label
+    let detected = 0, labeled = 0;
+    OBJ.forEach((ob, i) => {
+      if (ob.label !== false) labeled++;
+      const p = boxP[i]; if (p <= 0) return;
+      if (p >= 1 && ob.label !== false) detected++;
+      const v = corners(ob.bb).map(c => P(...c));
+      const n = p * EDGES.length, full = Math.floor(n);
+      const flash = p >= 1 ? Math.max(0, 1 - (t - (5.6 + i * .42 + .9)) / .5) : 0;
+      for (let e = 0; e < Math.min(full + 1, EDGES.length); e++) {
+        const [a, b] = EDGES[e], f = e < full ? 1 : n - full;
+        const end = [v[a][0] + (v[b][0] - v[a][0]) * f, v[a][1] + (v[b][1] - v[a][1]) * f];
+        line(v[a], end, (.14 + flash * .3) * fade, 4.5, LIME);
+        line(v[a], end, (.85 + flash * .15) * fade, 1.2, LIME);
+      }
+      if (p >= 1 && ob.label !== false && W >= 500) {
+        const la = clamp01((t - (5.6 + i * .42 + .9)) / .35) * fade;
+        const top = v.slice(4).reduce((m, q) => (q[1] < m[1] ? q : m));
+        line(top, [top[0] + 10, top[1] - 12], la * .7, 1, LIME);
+        tag(top[0] + 10, top[1] - 12, ob.name, la);
+      }
+    });
+
+    // Moving object: per-frame OBB ghosts, then the 4D track
+    if (scanP > .12) {
+      const live = t > 9.6;
+      proj(...A); const a2 = [PX, PY]; proj(...B); const b2 = [PX, PY];
+      if (t > 8.8) {
+        const ma = clamp01((t - 8.8) / .4) * fade;
+        ctx.font = '11px "JetBrains Mono", monospace'; ctx.fillStyle = LIME;
+        [[a2, 'A'], [b2, 'B']].forEach(([q, s]) => { ctx.globalAlpha = ma; ctx.beginPath(); ctx.arc(q[0], q[1], 3, 0, 7); ctx.fill(); ctx.fillText(s, q[0] - 18, q[1] + 4); });
+      }
+      for (let k = 1; k < 12; k++) {
+        const q = k / 12; if (q > trackP) break;
+        cube(cup(q), CUP, Math.max(.08, .32 * (1 - (trackP - q) * 1.4)) * fade, false);
+      }
+      ctx.fillStyle = LIME;
+      for (let k = 0; k <= 90; k++) {
+        const q = k / 90; if (q > trackP) break;
+        proj(...cup(q)); ctx.globalAlpha = (.2 + .8 * q / Math.max(trackP, .001)) * fade; ctx.fillRect(PX - 1.4, PY - 1.4, 2.8, 2.8);
+      }
+      const c = cup(trackP);
+      if (live) {
+        proj(...c);
+        const g = ctx.createRadialGradient(PX, PY, 0, PX, PY, 40);
+        g.addColorStop(0, rgba(G, .5 * fade)); g.addColorStop(1, rgba(G, 0));
+        ctx.globalAlpha = 1; ctx.fillStyle = g; ctx.fillRect(PX - 40, PY - 40, 80, 80);
+      }
+      cube(c, CUP, (live ? 1 : .55) * fade, live);
+      if (live) { proj(...c); tag(PX - 14, PY - 16, W < 500 ? 'cup · id 07' : trackP < 1 ? 'cup · id 07 · tracking' : 'cup · id 07 · 4D track', clamp01((t - 9.6) / .3) * fade, G, true); }
+    }
+
+    // World state: every object links back to the observations that support it
+    if (t > 14.2 && poses.length) {
+      const la = clamp01((t - 14.2) / .6) * fade;
+      ctx.setLineDash([3, 4]); ctx.lineDashOffset = REDUCE ? 0 : -ms * .03;
+      OBJ.forEach(ob => {
+        if (ob.label === false) return;
+        const b = ob.bb; proj((b[0] + b[1]) / 2, b[3], (b[4] + b[5]) / 2); const o2 = [PX, PY];
+        const near = poses.reduce((m, q) => (Math.abs(q[0] - o2[0]) < Math.abs(m[0] - o2[0]) ? q : m));
+        line(o2, near, .5 * la, 1, camCol);
+        ctx.globalAlpha = la; ctx.fillStyle = camCol; ctx.beginPath(); ctx.arc(o2[0], o2[1], 2.2, 0, 7); ctx.fill();
+      });
+      ctx.setLineDash([]);
+    }
+
+    // HUD: where the loop is in the pipeline
+    ctx.globalCompositeOperation = 'source-over';
+    const PH = ['CAPTURE', 'DETECT', 'TRACK', 'WORLD STATE'];
+    const ph = t < 5.9 ? 0 : t < 9.8 ? 1 : t < 14.2 ? 2 : 3;
+    const small = W < 460, fs = small ? 9 : 10, pad = small ? 0 : 24, topY = inFlow ? 18 : 96;
+    ctx.font = `500 ${fs}px "JetBrains Mono", monospace`;
+    let x = W - pad - (small ? 16 : 0);
+    const chips = PH.map((s, k) => `0${k + 1} ${s}`);
+    for (let k = chips.length - 1; k >= 0; k--) {
+      const w = ctx.measureText(chips[k]).width + 12; x -= w;
+      ctx.globalAlpha = 1;
+      if (k === ph) { ctx.fillStyle = LIME; ctx.fillRect(x, topY, w, fs + 10); ctx.fillStyle = 'rgb(15,34,0)'; }
+      else { ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.lineWidth = 1; ctx.strokeRect(x + .5, topY + .5, w - 1, fs + 9); ctx.fillStyle = k < ph ? rgba(G, .75) : 'rgba(255,255,255,.35)'; }
+      ctx.fillText(chips[k], x + 6, topY + fs + 3);
+      x -= 4;
+    }
+    const barX = x + 4, barW = W - pad - (small ? 16 : 0) - barX;
+    ctx.fillStyle = 'rgba(255,255,255,.1)'; ctx.fillRect(barX, topY + fs + 16, barW, 1);
+    ctx.fillStyle = LIME; ctx.fillRect(barX, topY + fs + 16, barW * (t / PERIOD), 1);
+    if (!small) {
+      ctx.font = '10px "JetBrains Mono", monospace'; ctx.fillStyle = 'rgba(255,255,255,.38)'; ctx.textAlign = 'right';
+      ctx.fillText(`PTS ${shown.toLocaleString('en-US')}   OBJ ${detected}/${labeled}   FRAME ${String(Math.floor(t * 30)).padStart(4, '0')}`, W - pad, H - 28);
+      ctx.textAlign = 'left';
+    }
+    ctx.globalAlpha = 1;
     if (!REDUCE && running) requestAnimationFrame(frame);
   }
   resize();
   addEventListener('resize', resize);
   if (HAS_IO && !REDUCE) watch(cvs, e => { const was = running; running = e.isIntersecting; if (running && !was) requestAnimationFrame(frame); }, { threshold: 0 });
   requestAnimationFrame(frame);
-  if (document.fonts && REDUCE) document.fonts.ready.then(() => requestAnimationFrame(frame));
+  if (document.fonts) document.fonts.ready.then(() => REDUCE && requestAnimationFrame(frame));
 })();
 
 /* ---------- Scroll progress ---------- */
