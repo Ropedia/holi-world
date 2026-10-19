@@ -16,9 +16,12 @@ Hao Li<sup>1,2*</sup>, Xiyuan Zheng<sup>1,2*</sup>, Yuanyuan Gao<sup>1,3*</sup>,
 
 </div>
 
-<p align="center">
-  <a href="assets/holiworld_video.mp4"><img src="assets/video_thumbnail.jpg" alt="Holi-World video" width="900"></a>
-</p>
+
+
+https://github.com/user-attachments/assets/b2a237e5-469c-4dd0-b86f-d8751a347eca
+
+
+
 
 ## Release
 
@@ -28,8 +31,6 @@ The code will not be open-sourced. The dataset and model will be released on Hug
 | --- | --- |
 | HoliWorld-Data | 🤗 [`ropedia-ai/HoliWorld-Data`](https://huggingface.co/datasets/ropedia-ai/HoliWorld-Data) · coming soon |
 | HoliWorld-VL-4B | 🤗 [`ropedia-ai/HoliWorld-VL-4B`](https://huggingface.co/ropedia-ai/HoliWorld-VL-4B) · coming soon |
-| Paper | arXiv · coming soon |
-| Project page | [ropedia.github.io/holi-world](https://ropedia.github.io/holi-world/) |
 
 ## Citation
 
