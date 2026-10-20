@@ -26,11 +26,11 @@ authors:
   - family-names: Liu
     given-names: Ziwei
 preferred-citation:
-  type: report
+  type: article
   title: "Holi-World: Building Holistic World Intelligence from Human-Ego Experience"
+  journal: "arXiv preprint arXiv:2610.26549"
+  url: "https://arxiv.org/abs/2610.26549"
   year: 2026
-  institution:
-    name: Ropedia
   authors:
     - family-names: Li
       given-names: Hao

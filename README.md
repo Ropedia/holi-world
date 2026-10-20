@@ -9,7 +9,7 @@ Hao Li<sup>1,2*</sup>, Xiyuan Zheng<sup>1,2*</sup>, Yuanyuan Gao<sup>1,3*</sup>,
 <sup>*</sup>Equal contribution &nbsp;&nbsp; <sup>†</sup>Corresponding author
 
 <a href="https://ropedia.github.io/holi-world/"><img src="https://img.shields.io/badge/Project_Page-online-green" alt="Project Page"></a>
-<img src="https://img.shields.io/badge/arXiv-coming_soon-b31b1b" alt="arXiv">
+<a href="https://arxiv.org/abs/2610.26549"><img src="https://img.shields.io/badge/arXiv-2610.26549-b31b1b" alt="arXiv"></a>
 <a href="assets/holiworld_video.mp4"><img src="https://img.shields.io/badge/Video-MP4-ff0000" alt="Video"></a>
 <a href="https://github.com/Ropedia/holi-world"><img src="https://img.shields.io/badge/Code-github.com%2FRopedia%2Fholi--world-181717?logo=github&logoColor=white" alt="Code"></a>
 <a href="https://huggingface.co/ropedia-ai/holiworld-vl"><img src="https://img.shields.io/badge/Model-ropedia--ai%2Fholiworld--vl-ffcc4d?logo=huggingface&logoColor=black" alt="Model"></a>
@@ -40,7 +40,7 @@ The code will not be open-sourced. The dataset and model will be released on Hug
   title   = {Holi-World: Building Holistic World Intelligence from Human-Ego Experience},
   author  = {Li, Hao and Zheng, Xiyuan and Gao, Yuanyuan and Dai, Yalun and Ji, Xinhao and
              Chen, Xuan-Li and Zhao, Jing and Hong, Fangzhou and Chen, Zhaoxi and Liu, Ziwei},
-  journal = {Ropedia Technical Report},
+  journal = {arXiv preprint arXiv:2610.26549},
   year    = {2026}
 }
 ```
